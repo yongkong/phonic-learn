@@ -1,0 +1,66 @@
+// Common styles for WordWorld
+
+// Card base
+.card {
+  background: $surface;
+  border-radius: $radius-lg;
+  padding: $space-xl;
+  box-shadow: $shadow-sm;
+  margin-bottom: $space-md;
+}
+
+// Button base
+.btn-primary {
+  background: $primary;
+  color: $fg-inverse;
+  border-radius: $radius-pill;
+  padding: $space-lg $space-2xl;
+  font-size: 32rpx;
+  font-weight: bold;
+  text-align: center;
+  border: none;
+}
+
+.btn-secondary {
+  background: $secondary;
+  color: $fg-inverse;
+  border-radius: $radius-pill;
+  padding: $space-lg $space-2xl;
+  font-size: 32rpx;
+  font-weight: bold;
+  text-align: center;
+  border: none;
+}
+
+// Text colors
+.text-primary { color: $primary; }
+.text-secondary { color: $secondary; }
+.text-success { color: $success; }
+.text-warning { color: $warning; }
+.text-error { color: $error; }
+.text-muted { color: $fg-secondary; }
+
+// Letter colors for phonics
+.letter-vowel { color: $vowel; }
+.letter-consonant { color: $consonant; }
+.letter-silent { color: $silent; text-decoration: line-through; }
+.letter-combination {
+  color: $primary;
+  border: 2rpx solid #9B59B6;
+  border-radius: 4rpx;
+  padding: 0 4rpx;
+}
+
+// Page container
+.page {
+  padding: $space-xl;
+  min-height: 100vh;
+  background: $bg;
+}
+
+// Center content
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

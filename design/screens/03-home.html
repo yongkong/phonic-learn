@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WordWorld - 学习主页</title>
+<link rel="stylesheet" href="../css/tokens.css">
+<style>
+  .home-screen {
+    min-height: 100%;
+    padding-bottom: 90px;
+  }
+  .home-header {
+    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
+    padding: 0 var(--space-xl) var(--space-xl);
+    padding-top: 8px;
+    color: white;
+  }
+  .home-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm) 0;
+  }
+  .home-logo {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .home-topbar-icons {
+    display: flex;
+    gap: var(--space-md);
+    align-items: center;
+  }
+  .topbar-icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .notification-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 16px;
+    height: 16px;
+    background: var(--error);
+    border-radius: 50%;
+    font-size: 10px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--primary);
+  }
+  .home-user-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) 0;
+  }
+  .home-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    border: 2px solid rgba(255,255,255,0.5);
+  }
+  .home-user-info {
+    flex: 1;
+  }
+  .home-user-name {
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .home-user-grade {
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(255,255,255,0.2);
+    padding: 2px 10px;
+    border-radius: var(--radius-pill);
+  }
+  .home-user-subtitle {
+    font-size: 13px;
+    opacity: 0.85;
+    margin-top: 2px;
+  }
+  .home-progress-section {
+    background: rgba(255,255,255,0.15);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    margin-top: var(--space-sm);
+  }
+  .home-progress-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  .home-progress-bar {
+    height: 8px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .home-progress-fill {
+    height: 100%;
+    background: var(--warning);
+    border-radius: 4px;
+    width: 60%;
+    transition: width 1s ease;
+  }
+  /* Daily Challenge Banner */
+  .daily-banner {
+    margin: var(--space-lg) var(--space-xl);
+    background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    border: 1px solid rgba(255, 140, 66, 0.2);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .daily-banner:active { transform: scale(0.98); }
+  .daily-emoji {
+    font-size: 40px;
+    animation: pulse 2s ease infinite;
+  }
+  .daily-info {
+    flex: 1;
+  }
+  .daily-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--secondary-dark);
+  }
+  .daily-desc {
+    font-size: 13px;
+    color: var(--fg-secondary);
+    margin-top: 2px;
+  }
+  .daily-streak {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--secondary);
+    background: rgba(255, 140, 66, 0.12);
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+  }
+  /* Map Section */
+  .map-section {
+    padding: var(--space-md) 0;
+  }
+  .map-title {
+    font-size: 20px;
+    font-weight: 700;
+    padding: 0 var(--space-xl);
+    margin-bottom: var(--space-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+  .map-title-emoji {
+    font-size: 24px;
+  }
+  /* Scene Group */
+  .scene-group {
+    margin: 0 var(--space-xl) var(--space-lg);
+    position: relative;
+  }
+  .scene-connector {
+    position: absolute;
+    left: 24px;
+    bottom: -20px;
+    width: 2px;
+    height: 20px;
+    background: var(--border);
+  }
+  .scene-card-main {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: var(--transition-normal);
+  }
+  .scene-card-main:active {
+    transform: scale(0.98);
+    box-shadow: var(--shadow-md);
+  }
+  .scene-card-main.unlocked {
+    border-left: 4px solid var(--primary);
+  }
+  .scene-card-main.current {
+    border-left: 4px solid var(--secondary);
+    box-shadow: var(--shadow-md), 0 0 0 1px rgba(255, 140, 66, 0.15);
+  }
+  .scene-card-main.locked {
+    opacity: 0.6;
+    border-left: 4px solid var(--fg-tertiary);
+  }
+  .scene-card-top {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm);
+  }
+  .scene-big-icon {
+    font-size: 36px;
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border-radius: var(--radius-md);
+  }
+  .scene-card-title {
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .scene-card-progress {
+    font-size: 13px;
+    color: var(--fg-secondary);
+    margin-top: 2px;
+  }
+  .scene-card-lock {
+    font-size: 24px;
+    margin-left: auto;
+  }
+  .scene-subitems {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-top: var(--space-md);
+  }
+  .scene-subitem {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    background: var(--bg);
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    color: var(--fg-secondary);
+  }
+  .scene-subitem.completed {
+    background: rgba(92, 184, 92, 0.1);
+    color: var(--success);
+  }
+  .scene-subitem.locked {
+    opacity: 0.5;
+  }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="dynamic-island"></div>
+
+  <div class="screen-content">
+    <div class="home-screen">
+      <!-- Header -->
+      <div class="home-header">
+        <div class="home-topbar">
+          <div class="home-logo">🍎 WordWorld</div>
+          <div class="home-topbar-icons">
+            <button class="topbar-icon-btn">
+              🔔
+              <span class="notification-badge">2</span>
+            </button>
+            <button class="topbar-icon-btn">⚙️</button>
+          </div>
+        </div>
+        <div class="home-user-card">
+          <div class="home-avatar">🧒</div>
+          <div class="home-user-info">
+            <div class="home-user-name">
+              小明
+              <span class="home-user-grade">三年级</span>
+            </div>
+            <div class="home-user-subtitle">已连续学习 7 天 🔥</div>
+          </div>
+        </div>
+        <div class="home-progress-section">
+          <div class="home-progress-label">
+            <span>今日已学: 12 / 20 个单词</span>
+            <span style="font-weight:700;">60%</span>
+          </div>
+          <div class="home-progress-bar">
+            <div class="home-progress-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Daily Challenge -->
+      <div class="daily-banner">
+        <span class="daily-emoji">⏰</span>
+        <div class="daily-info">
+          <div class="daily-title">每日挑战已刷新！</div>
+          <div class="daily-desc">20题限时5分钟，开始挑战吧</div>
+        </div>
+        <span class="daily-streak">🔥 3天</span>
+      </div>
+
+      <!-- Learning Map -->
+      <div class="map-section">
+        <div class="map-title">
+          <span class="map-title-emoji">📍</span>
+          学习地图
+        </div>
+
+        <!-- Scene 1: 我的家 -->
+        <div class="scene-group">
+          <div class="scene-card-main unlocked">
+            <div class="scene-card-top">
+              <div class="scene-big-icon">🏠</div>
+              <div>
+                <div class="scene-card-title">我的家</div>
+                <div class="scene-card-progress">已学 8/15 个单词</div>
+              </div>
+            </div>
+            <div class="scene-subitems">
+              <span class="scene-subitem completed">✅ 厨房</span>
+              <span class="scene-subitem completed">✅ 客厅</span>
+              <span class="scene-subitem">🔒 卧室</span>
+              <span class="scene-subitem locked">🔒 浴室</span>
+            </div>
+          </div>
+          <div class="scene-connector"></div>
+        </div>
+
+        <!-- Scene 2: 我的学校 (current) -->
+        <div class="scene-group">
+          <div class="scene-card-main current">
+            <div class="scene-card-top">
+              <div class="scene-big-icon">🏫</div>
+              <div>
+                <div class="scene-card-title">我的学校</div>
+                <div class="scene-card-progress">已学 2/12 个单词 · <span style="color:var(--secondary);font-weight:600;">继续学习</span></div>
+              </div>
+            </div>
+            <div class="scene-subitems">
+              <span class="scene-subitem completed">✅ 教室</span>
+              <span class="scene-subitem">🔒 操场</span>
+              <span class="scene-subitem locked">🔒 图书馆</span>
+            </div>
+          </div>
+          <div class="scene-connector"></div>
+        </div>
+
+        <!-- Scene 3: 超市购物 -->
+        <div class="scene-group">
+          <div class="scene-card-main locked">
+            <div class="scene-card-top">
+              <div class="scene-big-icon">🛒</div>
+              <div>
+                <div class="scene-card-title">超市购物</div>
+                <div class="scene-card-progress">完成「我的学校」后解锁</div>
+              </div>
+              <span class="scene-card-lock">🔒</span>
+            </div>
+          </div>
+          <div class="scene-connector"></div>
+        </div>
+
+        <!-- Scene 4: 公园与自然 -->
+        <div class="scene-group">
+          <div class="scene-card-main locked">
+            <div class="scene-card-top">
+              <div class="scene-big-icon">🌳</div>
+              <div>
+                <div class="scene-card-title">公园与自然</div>
+                <div class="scene-card-progress">完成「超市购物」后解锁</div>
+              </div>
+              <span class="scene-card-lock">🔒</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-item active">
+      <span class="tab-icon">📖</span>
+      <span class="tab-label">学习</span>
+    </button>
+    <button class="tab-item">
+      <span class="tab-icon">🎮</span>
+      <span class="tab-label">练习</span>
+    </button>
+    <button class="tab-item">
+      <span class="tab-icon">✏️</span>
+      <span class="tab-label">作文</span>
+    </button>
+    <button class="tab-item">
+      <span class="tab-icon">👤</span>
+      <span class="tab-label">我的</span>
+    </button>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+</body>
+</html>

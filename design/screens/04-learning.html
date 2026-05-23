@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WordWorld - 五维学习</title>
+<link rel="stylesheet" href="../css/tokens.css">
+<style>
+  .learning-screen {
+    min-height: 100%;
+    background: var(--bg);
+    padding-bottom: 20px;
+  }
+  .learning-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border-light);
+    padding: 4px var(--space-xl) var(--space-md);
+  }
+  .learning-progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-sm);
+  }
+  .learning-counter {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--fg-secondary);
+  }
+  .learning-pause-btn {
+    font-size: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .learning-progress-dots {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: var(--space-md);
+  }
+  .learning-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .learning-dot.completed { background: var(--primary); }
+  .learning-dot.current { background: var(--secondary); width: 8px; height: 8px; }
+  /* Dimension Tabs */
+  .dim-tabs {
+    display: flex;
+    gap: 0;
+    background: var(--bg);
+    border-radius: var(--radius-md);
+    padding: 3px;
+  }
+  .dim-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 4px;
+    border: none;
+    background: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
+    font-family: var(--font-body);
+  }
+  .dim-tab.active {
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+  .dim-tab.completed .dim-tab-dot {
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+  .dim-tab-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: transparent;
+    transition: var(--transition-fast);
+  }
+  .dim-tab.active .dim-tab-dot {
+    background: var(--secondary);
+    border-color: var(--secondary);
+  }
+  .dim-tab-label {
+    font-size: 11px;
+    color: var(--fg-tertiary);
+    font-weight: 500;
+  }
+  .dim-tab.active .dim-tab-label {
+    color: var(--fg);
+    font-weight: 700;
+  }
+  .dim-tab.completed .dim-tab-label {
+    color: var(--primary);
+  }
+  /* Content Area */
+  .learning-content {
+    padding: var(--space-lg) var(--space-xl);
+  }
+  .dim-panel {
+    display: none;
+    animation: fadeInUp 0.3s ease;
+  }
+  .dim-panel.active {
+    display: block;
+  }
+  .dim-label {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: var(--space-lg);
+  }
+  /* Word Card */
+  .word-card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: var(--space-2xl) var(--space-xl);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    margin-bottom: var(--space-xl);
+    position: relative;
+    overflow: hidden;
+  }
+  .word-card-emoji {
+    font-size: 64px;
+    display: block;
+    margin-bottom: var(--space-md);
+  }
+  .word-card-word {
+    font-family: var(--font-display);
+    font-size: 52px;
+    font-weight: bold;
+    letter-spacing: 8px;
+    margin-bottom: var(--space-xs);
+  }
+  .word-card-phonetic {
+    font-size: 20px;
+    color: var(--fg-secondary);
+    margin-bottom: var(--space-md);
+  }
+  .word-card-audio {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 20px;
+    background: rgba(74, 144, 217, 0.08);
+    border-radius: var(--radius-pill);
+    font-size: 14px;
+    color: var(--primary);
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-family: var(--font-body);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .word-card-audio:active {
+    background: rgba(74, 144, 217, 0.15);
+  }
+  /* Phonics Analysis */
+  .phonics-card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+    border: 1px solid var(--border-light);
+  }
+  .phonics-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: var(--space-md);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .phonics-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 15px;
+  }
+  .phonics-item:last-child { border-bottom: none; }
+  .phonics-letter {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    width: 28px;
+    text-align: center;
+  }
+  .phonics-sound {
+    font-size: 15px;
+    color: var(--fg-secondary);
+    flex: 1;
+  }
+  .phonics-type {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+  }
+  .phonics-type.vowel { background: rgba(255,107,107,0.1); color: var(--vowel); }
+  .phonics-type.consonant { background: rgba(74,144,217,0.1); color: var(--consonant); }
+  .phonics-type.silent { background: rgba(153,153,153,0.1); color: var(--silent); }
+  .phonics-type.combo { background: rgba(255,140,66,0.1); color: var(--syllable-sep); }
+  /* Next Button */
+  .next-btn-area {
+    margin-top: var(--space-xl);
+  }
+  .next-btn-area .btn {
+    width: 100%;
+  }
+  /* Scene Card (Meaning) */
+  .scene-story {
+    background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-lg);
+    border: 1px solid rgba(255, 140, 66, 0.15);
+  }
+  .scene-story-text {
+    font-size: 17px;
+    line-height: 1.8;
+    color: var(--fg);
+  }
+  .scene-story-text .highlight {
+    background: rgba(74, 144, 217, 0.15);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .scene-story-emoji {
+    font-size: 36px;
+    text-align: center;
+    margin-bottom: var(--space-md);
+  }
+  /* Meaning Card */
+  .meaning-card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+    border: 1px solid var(--border-light);
+  }
+  .meaning-word {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--primary);
+    margin-bottom: var(--space-sm);
+  }
+  .meaning-chinese {
+    font-size: 18px;
+    color: var(--fg);
+    margin-bottom: var(--space-xs);
+  }
+  .meaning-pos {
+    display: inline-flex;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+  }
+  .meaning-pos .badge {
+    cursor: pointer;
+  }
+  .tip-box {
+    background: rgba(92, 184, 92, 0.08);
+    border-radius: var(--radius-md);
+    padding: var(--space-md) var(--space-lg);
+    border: 1px solid rgba(92, 184, 92, 0.15);
+    margin-top: var(--space-md);
+  }
+  .tip-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--success);
+    margin-bottom: var(--space-xs);
+  }
+  .tip-text {
+    font-size: 15px;
+    color: var(--fg-secondary);
+    line-height: 1.6;
+  }
+  /* Syllable Display */
+  .syllable-row {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-lg);
+    margin: var(--space-lg) 0;
+  }
+  .syllable-group {
+    text-align: center;
+  }
+  .syllable-text {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: bold;
+    color: var(--primary);
+    letter-spacing: 3px;
+  }
+  .syllable-line {
+    height: 4px;
+    background: var(--secondary);
+    border-radius: 2px;
+    margin-top: 4px;
+  }
+  .syllable-phonetic {
+    font-size: 18px;
+    color: var(--fg-secondary);
+    margin-top: var(--space-sm);
+  }
+  .syllable-audio-btn {
+    margin-top: var(--space-xs);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(74, 144, 217, 0.1);
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Practice Steps */
+  .practice-steps {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+    border: 1px solid var(--border-light);
+  }
+  .practice-step {
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .practice-step:last-child { border-bottom: none; }
+  .practice-step-num {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: var(--space-xs);
+  }
+  .practice-step-content {
+    font-size: 15px;
+    color: var(--fg-secondary);
+  }
+  .mic-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    width: 100%;
+    padding: var(--space-lg);
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: 17px;
+    font-weight: 700;
+    font-family: var(--font-body);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: var(--transition-fast);
+  }
+  .mic-btn:active {
+    background: var(--primary-dark);
+    transform: scale(0.98);
+  }
+  .mic-btn.recording {
+    background: var(--error);
+    animation: pulse 1s ease infinite;
+  }
+  .score-display {
+    text-align: center;
+    padding: var(--space-lg);
+    background: rgba(92, 184, 92, 0.08);
+    border-radius: var(--radius-md);
+    margin-top: var(--space-md);
+  }
+  .score-number {
+    font-family: var(--font-display);
+    font-size: 42px;
+    font-weight: bold;
+    color: var(--success);
+  }
+  .score-stars {
+    font-size: 24px;
+    margin-top: 4px;
+  }
+  /* Memory Section */
+  .memory-card {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+    border: 1px solid var(--border-light);
+    border-left: 4px solid;
+  }
+  .memory-card.img-method { border-left-color: var(--primary); }
+  .memory-card.sound-method { border-left-color: var(--secondary); }
+  .memory-card.root-method { border-left-color: var(--success); }
+  .memory-method-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: var(--space-sm);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .memory-method-text {
+    font-size: 15px;
+    color: var(--fg-secondary);
+    line-height: 1.6;
+  }
+  /* Spelling Test */
+  .spelling-area {
+    text-align: center;
+    padding: var(--space-xl) 0;
+  }
+  .spelling-slots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: var(--space-xl);
+  }
+  .spelling-slot {
+    width: 44px;
+    height: 48px;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary);
+    transition: var(--transition-fast);
+  }
+  .spelling-slot.filled {
+    border-style: solid;
+    border-color: var(--primary);
+    background: rgba(74, 144, 217, 0.06);
+  }
+  .spelling-slot.current-slot {
+    border-color: var(--secondary);
+    animation: pulse 1s ease infinite;
+  }
+  .letter-keyboard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  /* Example Sentences */
+  .example-sentence {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+    border: 1px solid var(--border-light);
+  }
+  .example-num {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: var(--space-sm);
+  }
+  .example-en {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--fg);
+    margin-bottom: var(--space-xs);
+  }
+  .example-en .word-highlight {
+    background: var(--primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+  .example-zh {
+    font-size: 16px;
+    color: var(--fg-secondary);
+    line-height: 1.6;
+  }
+  .example-audio-btn {
+    margin-top: var(--space-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    background: var(--bg);
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    color: var(--fg-secondary);
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Fill-in exercise */
+  .fillin-card {
+    background: var(--bg);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    margin-top: var(--space-md);
+    text-align: center;
+  }
+  .fillin-sentence {
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--fg);
+    margin-bottom: var(--space-md);
+  }
+  .fillin-blank {
+    display: inline-block;
+    min-width: 100px;
+    border-bottom: 3px solid var(--primary);
+    padding: 0 8px;
+    color: var(--primary);
+    font-weight: 700;
+  }
+  .fillin-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-sm);
+  }
+  .fillin-option {
+    padding: 12px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
+    font-family: var(--font-body);
+  }
+  .fillin-option:active { transform: scale(0.96); }
+  .fillin-option.correct {
+    border-color: var(--success);
+    background: rgba(92, 184, 92, 0.1);
+    color: var(--success);
+  }
+  .fillin-option.wrong {
+    border-color: var(--error);
+    background: rgba(255, 107, 107, 0.1);
+    color: var(--error);
+  }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="dynamic-island"></div>
+  <div class="status-bar dark">
+    <span class="status-time">9:41</span>
+    <span class="status-icons">
+      <svg width="16" height="12" viewBox="0 0 16 12"><rect x="0" y="6" width="3" height="6" rx="0.5" fill="currentColor" opacity="0.3"/><rect x="4.5" y="4" width="3" height="8" rx="0.5" fill="currentColor" opacity="0.5"/><rect x="9" y="2" width="3" height="10" rx="0.5" fill="currentColor" opacity="0.7"/><rect x="13" y="0" width="3" height="12" rx="0.5" fill="currentColor"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 3.6C10.2 3.6 12.2 4.6 13.5 6.2L15 4.5C13.3 2.5 10.8 1.2 8 1.2S2.7 2.5 1 4.5L2.5 6.2C3.8 4.6 5.8 3.6 8 3.6z" fill="currentColor" opacity="0.3"/><path d="M8 7c1.3 0 2.5.6 3.3 1.5L12.5 9.8C11.4 8.5 9.8 7.7 8 7.7s-3.4.8-4.5 2.1l1.2-1.3C5.5 7.6 6.7 7 8 7z" fill="currentColor" opacity="0.6"/><circle cx="8" cy="10.8" r="1.2" fill="currentColor"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2" stroke="currentColor" stroke-width="1" fill="none"/><rect x="22" y="4" width="2.5" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="currentColor"/></svg>
+    </span>
+  </div>
+
+  <div class="screen-content">
+    <div class="learning-screen">
+      <!-- Header -->
+      <div class="learning-header">
+        <div class="learning-progress-row">
+          <button class="nav-back" onclick="history.back()">← 退出</button>
+          <span class="learning-counter">3 / 15</span>
+          <button class="learning-pause-btn">⏸️</button>
+        </div>
+        <div class="learning-progress-dots">
+          <span class="learning-dot completed"></span><span class="learning-dot completed"></span><span class="learning-dot current"></span>
+          <span class="learning-dot"></span><span class="learning-dot"></span><span class="learning-dot"></span>
+          <span class="learning-dot"></span><span class="learning-dot"></span><span class="learning-dot"></span>
+          <span class="learning-dot"></span><span class="learning-dot"></span><span class="learning-dot"></span>
+          <span class="learning-dot"></span><span class="learning-dot"></span><span class="learning-dot"></span>
+        </div>
+        <!-- Dimension Tabs -->
+        <div class="dim-tabs">
+          <button class="dim-tab completed" data-dim="form" onclick="switchDim('form')">
+            <span class="dim-tab-dot"></span>
+            <span class="dim-tab-label">形</span>
+          </button>
+          <button class="dim-tab completed" data-dim="meaning" onclick="switchDim('meaning')">
+            <span class="dim-tab-dot"></span>
+            <span class="dim-tab-label">义</span>
+          </button>
+          <button class="dim-tab active" data-dim="sound" onclick="switchDim('sound')">
+            <span class="dim-tab-dot"></span>
+            <span class="dim-tab-label">音</span>
+          </button>
+          <button class="dim-tab" data-dim="memory" onclick="switchDim('memory')">
+            <span class="dim-tab-dot"></span>
+            <span class="dim-tab-label">记</span>
+          </button>
+          <button class="dim-tab" data-dim="usage" onclick="switchDim('usage')">
+            <span class="dim-tab-dot"></span>
+            <span class="dim-tab-label">用</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="learning-content">
+        <!-- Dimension 1: 形 (Form) -->
+        <div class="dim-panel" id="panel-form">
+          <div class="dim-label">第①维：形 (Form)</div>
+          <div class="word-card">
+            <span class="word-card-emoji">🍊</span>
+            <div class="word-card-word">
+              <span class="letter-consonant">o</span><span class="letter-consonant">r</span><span class="letter-vowel">a</span><span class="letter-consonant">n</span><span class="letter-consonant">g</span><span class="letter-vowel">e</span>
+            </div>
+            <div class="word-card-phonetic">/ˈɒr.ɪndʒ/</div>
+            <button class="word-card-audio" onclick="playAudio()">🔊 点击听发音</button>
+          </div>
+          <div class="phonics-card">
+            <div class="phonics-title">📐 自然拼读分析</div>
+            <div class="phonics-item">
+              <span class="phonics-letter letter-vowel">o</span>
+              <span class="phonics-sound">→ /ɒ/</span>
+              <span class="phonics-type vowel">短元音</span>
+            </div>
+            <div class="phonics-item">
+              <span class="phonics-letter letter-consonant">r</span>
+              <span class="phonics-sound">→ /r/</span>
+              <span class="phonics-type consonant">辅音</span>
+            </div>
+            <div class="phonics-item">
+              <span class="phonics-letter letter-consonant">a</span>
+              <span class="phonics-sound">→ /ɪ/</span>
+              <span class="phonics-type combo">弱读</span>
+            </div>
+            <div class="phonics-item">
+              <span class="phonics-letter letter-consonant">n</span>
+              <span class="phonics-sound">→ /n/</span>
+              <span class="phonics-type consonant">辅音</span>
+            </div>
+            <div class="phonics-item">
+              <span class="phonics-letter letter-consonant">g+e</span>
+              <span class="phonics-sound">→ /dʒ/</span>
+              <span class="phonics-type combo">组合音</span>
+            </div>
+            <div class="phonics-item">
+              <span class="phonics-letter letter-silent">e</span>
+              <span class="phonics-sound">→ 静音</span>
+              <span class="phonics-type silent">不发音</span>
+            </div>
+          </div>
+          <div class="next-btn-area">
+            <button class="btn btn-primary" onclick="switchDim('meaning')">下一步：义 →</button>
+          </div>
+        </div>
+
+        <!-- Dimension 2: 义 (Meaning) -->
+        <div class="dim-panel" id="panel-meaning">
+          <div class="dim-label">第②维：义 (Meaning)</div>
+          <div class="scene-story">
+            <div class="scene-story-emoji">🛒</div>
+            <div class="scene-story-text">
+              小明在超市拿起一个圆圆的、<span class="highlight">橙色</span>的水果
+              <br><br>
+              "妈妈，我想要这个 <span class="highlight">orange</span>！" 🍊
+            </div>
+          </div>
+          <div class="meaning-card">
+            <div class="meaning-word">orange</div>
+            <div class="meaning-chinese">n. 橙子；橘子</div>
+            <div class="meaning-chinese">adj. 橙色的</div>
+            <div class="meaning-pos">
+              <span class="badge badge-primary">名词</span>
+              <span class="badge badge-success">形容词</span>
+            </div>
+          </div>
+          <div class="tip-box">
+            <div class="tip-title">💡 你知道吗？</div>
+            <div class="tip-text">橙子(orange)的颜色也叫 orange 哦！就像苹果(apple)是红色的(red)一样~</div>
+          </div>
+          <div class="next-btn-area">
+            <button class="btn btn-primary" onclick="switchDim('sound')">下一步：音 →</button>
+          </div>
+        </div>
+
+        <!-- Dimension 3: 音 (Sound) -->
+        <div class="dim-panel active" id="panel-sound">
+          <div class="dim-label">第③维：音 (Sound)</div>
+          <div class="word-card">
+            <div class="syllable-row">
+              <div class="syllable-group">
+                <div class="syllable-text">o</div>
+                <div class="syllable-line" style="width:30px;"></div>
+                <div class="syllable-phonetic">/ɒ/</div>
+                <button class="syllable-audio-btn">🔊</button>
+              </div>
+              <div class="syllable-group">
+                <div class="syllable-text">range</div>
+                <div class="syllable-line" style="width:60px;"></div>
+                <div class="syllable-phonetic">/rɪndʒ/</div>
+                <button class="syllable-audio-btn">🔊</button>
+              </div>
+            </div>
+            <div style="font-size:14px;color:var(--fg-secondary);">
+              音节数: 2个音节 · 重音在: <span style="color:var(--primary);font-weight:700;">第1音节</span>
+            </div>
+          </div>
+          <div class="practice-steps">
+            <div class="practice-step">
+              <div class="practice-step-num">第1步: 听 /ɒ/</div>
+              <div class="practice-step-content">
+                <button class="example-audio-btn">▶ 再听一次</button>
+              </div>
+            </div>
+            <div class="practice-step">
+              <div class="practice-step-num">第2步: 听 /rɪndʒ/</div>
+              <div class="practice-step-content">
+                <button class="example-audio-btn">▶ 再听一次</button>
+              </div>
+            </div>
+            <div class="practice-step">
+              <div class="practice-step-num">第3步: 合起来读</div>
+              <div class="practice-step-content" style="text-align:center;">
+                <span style="font-family:var(--font-display);font-size:18px;color:var(--fg);">/ɒ/ + /rɪndʒ/ = <span style="color:var(--primary);font-weight:700;">orange!</span> 🎉</span>
+                <br>
+                <button class="example-audio-btn" style="margin-top:8px;">▶ 完整发音</button>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:var(--space-lg);">
+            <div style="font-size:15px;font-weight:700;margin-bottom:var(--space-sm);">🎤 跟读打分</div>
+            <button class="mic-btn" id="micBtn" onclick="toggleRecording()">
+              🎙️ 按住说话 → 松开评分
+            </button>
+            <div class="score-display" id="scoreDisplay" style="display:none;">
+              <div class="score-number" id="scoreNumber">85</div>
+              <div class="score-stars">⭐⭐⭐</div>
+            </div>
+          </div>
+          <div class="next-btn-area">
+            <button class="btn btn-primary" onclick="switchDim('memory')">下一步：记 →</button>
+          </div>
+        </div>
+
+        <!-- Dimension 4: 记 (Memory) -->
+        <div class="dim-panel" id="panel-memory">
+          <div class="dim-label">第④维：记 (Memory)</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:var(--space-md);">🧠 记忆魔法</div>
+          <div class="memory-card img-method">
+            <div class="memory-method-title">🖼️ 方法1: 图片联想</div>
+            <div class="memory-method-text">
+              🍊 圆圆的橙子，像太阳(sun)一样圆圆的。<br>
+              <b style="color:var(--primary);">o = 圆形</b> → 看到o就想到橙子！
+            </div>
+          </div>
+          <div class="memory-card sound-method">
+            <div class="memory-method-title">🎵 方法2: 谐音联想</div>
+            <div class="memory-method-text">
+              orange → <b>"偶润橘"</b><br>
+              偶(我)润(水润润)的橘子 → <span style="color:var(--secondary);font-weight:700;">orange!</span>
+            </div>
+          </div>
+          <div class="memory-card root-method">
+            <div class="memory-method-title">🔤 方法3: 词根词缀</div>
+            <div class="memory-method-text">
+              <b>orange</b> + juice = <span style="color:var(--primary);font-weight:700;">orange juice</span> 🧃 橙汁<br>
+              <b>orange</b> + 颜色 = <span style="color:var(--secondary);font-weight:700;">橙色</span> 🧡
+            </div>
+          </div>
+          <div style="margin-top:var(--space-xl);">
+            <div style="font-size:15px;font-weight:700;margin-bottom:var(--space-md);">✍️ 快速拼写测试</div>
+            <div class="spelling-area">
+              <div style="font-size:15px;color:var(--fg-secondary);margin-bottom:var(--space-md);">听发音，拼写单词：</div>
+              <button class="word-card-audio" onclick="playAudio()" style="margin-bottom:var(--space-lg);">🔊 播放发音</button>
+              <div class="spelling-slots" id="spellingSlots">
+                <div class="spelling-slot" data-index="0"></div>
+                <div class="spelling-slot" data-index="1"></div>
+                <div class="spelling-slot current-slot" data-index="2"></div>
+                <div class="spelling-slot" data-index="3"></div>
+                <div class="spelling-slot" data-index="4"></div>
+                <div class="spelling-slot" data-index="5"></div>
+              </div>
+              <div class="letter-keyboard">
+                <div class="letter-tile" onclick="typeLetter('n')">n</div>
+                <div class="letter-tile" onclick="typeLetter('g')">g</div>
+                <div class="letter-tile" onclick="typeLetter('e')">e</div>
+                <div class="letter-tile" onclick="typeLetter('a')">a</div>
+                <div class="letter-tile" onclick="typeLetter('r')">r</div>
+                <div class="letter-tile" onclick="typeLetter('o')">o</div>
+              </div>
+            </div>
+          </div>
+          <div class="next-btn-area">
+            <button class="btn btn-primary" onclick="switchDim('usage')">下一步：用 →</button>
+          </div>
+        </div>
+
+        <!-- Dimension 5: 用 (Usage) -->
+        <div class="dim-panel" id="panel-usage">
+          <div class="dim-label">第⑤维：用 (Usage)</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:var(--space-md);">💬 实用例句</div>
+          <div class="example-sentence">
+            <div class="example-num">例句 ①</div>
+            <div class="example-en">I like to eat an <span class="word-highlight">orange</span> every morning.</div>
+            <div class="example-zh">我喜欢每天早上吃一个<span style="color:var(--primary);font-weight:600;">橙子</span>。</div>
+            <button class="example-audio-btn">🔊 播放</button>
+          </div>
+          <div class="example-sentence">
+            <div class="example-num">例句 ②</div>
+            <div class="example-en">The <span class="word-highlight">orange</span> cat is sleeping.</div>
+            <div class="example-zh">那只<span style="color:var(--secondary);font-weight:600;">橙色的</span>猫正在睡觉。</div>
+            <button class="example-audio-btn">🔊 播放</button>
+          </div>
+          <div class="example-sentence">
+            <div class="example-num">例句 ③</div>
+            <div class="example-en">Can I have some <span class="word-highlight">orange</span> juice?</div>
+            <div class="example-zh">我能喝点<span style="color:var(--primary);font-weight:600;">橙</span>汁吗？</div>
+            <button class="example-audio-btn">🔊 播放</button>
+          </div>
+          <div class="fillin-card">
+            <div style="font-size:15px;font-weight:700;margin-bottom:var(--space-md);">✏️ 填空练习</div>
+            <div class="fillin-sentence">
+              I like to eat an <span class="fillin-blank" id="fillinBlank">______</span> every day.
+            </div>
+            <div class="fillin-options">
+              <button class="fillin-option" onclick="checkFillin(this, false)">apple</button>
+              <button class="fillin-option" onclick="checkFillin(this, true)">orange</button>
+              <button class="fillin-option" onclick="checkFillin(this, false)">banana</button>
+              <button class="fillin-option" onclick="checkFillin(this, false)">grape</button>
+            </div>
+          </div>
+          <div class="next-btn-area">
+            <button class="btn btn-secondary" style="background:var(--success);">✅ 完成本词学习！</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+function switchDim(dim) {
+  // Update tabs
+  document.querySelectorAll('.dim-tab').forEach(tab => {
+    tab.classList.remove('active');
+    if (tab.dataset.dim === dim) tab.classList.add('active');
+  });
+  // Mark previous as completed
+  const dims = ['form', 'meaning', 'sound', 'memory', 'usage'];
+  const currentIdx = dims.indexOf(dim);
+  dims.forEach((d, i) => {
+    const tab = document.querySelector(`[data-dim="${d}"]`);
+    if (i < currentIdx) tab.classList.add('completed');
+    else if (i > currentIdx) tab.classList.remove('completed');
+  });
+  // Show panel
+  document.querySelectorAll('.dim-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + dim).classList.add('active');
+}
+
+function playAudio() {
+  // Placeholder for audio playback
+}
+
+let isRecording = false;
+function toggleRecording() {
+  const btn = document.getElementById('micBtn');
+  const score = document.getElementById('scoreDisplay');
+  if (!isRecording) {
+    btn.classList.add('recording');
+    btn.innerHTML = '🔴 录音中... 松开评分';
+    isRecording = true;
+  } else {
+    btn.classList.remove('recording');
+    btn.innerHTML = '🎙️ 按住说话 → 松开评分';
+    isRecording = false;
+    score.style.display = 'block';
+    // Simulate scoring
+    const num = document.getElementById('scoreNumber');
+    num.textContent = '0';
+    let val = 0;
+    const target = 85;
+    const timer = setInterval(() => {
+      val += 5;
+      if (val >= target) { val = target; clearInterval(timer); }
+      num.textContent = val;
+    }, 30);
+  }
+}
+
+// Spelling test
+const answer = ['o', 'r', 'a', 'n', 'g', 'e'];
+let currentLetterIdx = 0;
+
+function typeLetter(letter) {
+  if (currentLetterIdx >= answer.length) return;
+  const slots = document.querySelectorAll('.spelling-slot');
+  slots[currentLetterIdx].textContent = letter;
+  slots[currentLetterIdx].classList.add('filled');
+  slots[currentLetterIdx].classList.remove('current-slot');
+  currentLetterIdx++;
+  if (currentLetterIdx < answer.length) {
+    slots[currentLetterIdx].classList.add('current-slot');
+  }
+}
+
+function checkFillin(el, isCorrect) {
+  document.querySelectorAll('.fillin-option').forEach(opt => {
+    opt.style.pointerEvents = 'none';
+  });
+  if (isCorrect) {
+    el.classList.add('correct');
+    document.getElementById('fillinBlank').textContent = 'orange';
+    document.getElementById('fillinBlank').style.color = 'var(--success)';
+    document.getElementById('fillinBlank').style.borderBottomColor = 'var(--success)';
+  } else {
+    el.classList.add('wrong');
+    // Highlight correct answer
+    document.querySelectorAll('.fillin-option').forEach(opt => {
+      if (opt.textContent === 'orange') opt.classList.add('correct');
+    });
+  }
+}
+</script>
+</body>
+</html>

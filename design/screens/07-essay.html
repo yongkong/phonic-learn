@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WordWorld - 看图作文</title>
+<link rel="stylesheet" href="../css/tokens.css">
+<style>
+  .essay-screen {
+    min-height: 100%;
+    background: var(--bg);
+    padding-bottom: 30px;
+  }
+  .essay-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border-light);
+    padding: 4px var(--space-xl) var(--space-md);
+  }
+  .essay-header-title {
+    font-size: 17px;
+    font-weight: 700;
+    text-align: center;
+    padding-top: var(--space-sm);
+  }
+  .essay-level {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: var(--space-md) var(--space-xl);
+  }
+  .essay-level-badge {
+    padding: 4px 12px;
+    background: rgba(255, 140, 66, 0.12);
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--secondary);
+  }
+  .essay-level-text {
+    font-size: 14px;
+    color: var(--fg-secondary);
+  }
+  /* Scene Illustration */
+  .essay-scene {
+    margin: var(--space-md) var(--space-xl);
+    background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    text-align: center;
+    border: 1px solid rgba(92, 184, 92, 0.15);
+  }
+  .essay-scene-illustration {
+    font-size: 36px;
+    letter-spacing: 6px;
+    margin-bottom: var(--space-md);
+    line-height: 1.6;
+  }
+  .essay-scene-desc {
+    font-size: 15px;
+    color: var(--fg-secondary);
+    line-height: 1.6;
+  }
+  /* Model Essay */
+  .essay-model {
+    margin: var(--space-lg) var(--space-xl);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+  }
+  .essay-model-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .essay-model-audio {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 14px;
+    background: rgba(74, 144, 217, 0.08);
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    color: var(--primary);
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    margin-bottom: var(--space-md);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .essay-model-text {
+    font-size: 17px;
+    line-height: 1.8;
+    color: var(--fg);
+  }
+  .essay-model-text .highlight-word {
+    background: var(--primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    cursor: pointer;
+    position: relative;
+  }
+  /* Writing Area */
+  .essay-writing {
+    margin: var(--space-lg) var(--space-xl);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+  }
+  .essay-writing-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .essay-prompt-words {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-md);
+  }
+  .essay-prompt-word {
+    padding: 6px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    font-size: 14px;
+    color: var(--fg);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: var(--transition-fast);
+    font-family: var(--font-body);
+  }
+  .essay-prompt-word:active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  .essay-prompt-word.used {
+    background: rgba(92, 184, 92, 0.1);
+    color: var(--success);
+    border-color: var(--success);
+  }
+  .essay-textarea {
+    width: 100%;
+    min-height: 140px;
+    padding: var(--space-md);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 17px;
+    font-family: var(--font-display);
+    color: var(--fg);
+    background: var(--bg);
+    resize: none;
+    line-height: 1.6;
+    transition: var(--transition-fast);
+  }
+  .essay-textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.12);
+  }
+  .essay-textarea::placeholder {
+    color: var(--fg-tertiary);
+  }
+  .essay-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-md);
+    font-size: 13px;
+    color: var(--fg-secondary);
+  }
+  .essay-stats span {
+    font-weight: 600;
+  }
+  .essay-submit {
+    margin-top: var(--space-lg);
+  }
+  .essay-submit .btn {
+    width: 100%;
+  }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="dynamic-island"></div>
+  <div class="status-bar dark">
+    <span class="status-time">9:41</span>
+    <span class="status-icons">
+      <svg width="16" height="12" viewBox="0 0 16 12"><rect x="0" y="6" width="3" height="6" rx="0.5" fill="currentColor" opacity="0.3"/><rect x="4.5" y="4" width="3" height="8" rx="0.5" fill="currentColor" opacity="0.5"/><rect x="9" y="2" width="3" height="10" rx="0.5" fill="currentColor" opacity="0.7"/><rect x="13" y="0" width="3" height="12" rx="0.5" fill="currentColor"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 3.6C10.2 3.6 12.2 4.6 13.5 6.2L15 4.5C13.3 2.5 10.8 1.2 8 1.2S2.7 2.5 1 4.5L2.5 6.2C3.8 4.6 5.8 3.6 8 3.6z" fill="currentColor" opacity="0.3"/><path d="M8 7c1.3 0 2.5.6 3.3 1.5L12.5 9.8C11.4 8.5 9.8 7.7 8 7.7s-3.4.8-4.5 2.1l1.2-1.3C5.5 7.6 6.7 7 8 7z" fill="currentColor" opacity="0.6"/><circle cx="8" cy="10.8" r="1.2" fill="currentColor"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2" stroke="currentColor" stroke-width="1" fill="none"/><rect x="22" y="4" width="2.5" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="currentColor"/></svg>
+    </span>
+  </div>
+
+  <div class="screen-content">
+    <div class="essay-screen">
+      <!-- Header -->
+      <div class="essay-header">
+        <div class="flex items-center" style="padding-top:8px;">
+          <button class="nav-back">← 返回</button>
+        </div>
+        <div class="essay-header-title">✏️ 看图作文</div>
+      </div>
+
+      <!-- Level Badge -->
+      <div class="essay-level">
+        <span class="essay-level-badge">⭐⭐ 中级</span>
+        <span class="essay-level-text">3-4年级 · 连词成句</span>
+      </div>
+
+      <!-- Scene -->
+      <div class="essay-scene">
+        <div class="essay-scene-illustration">🛒🍎🍌🍊🍇🍓🍑</div>
+        <div class="essay-scene-desc">
+          周末，小明和妈妈去超市买水果。<br>
+          货架上有各种各样的水果，五颜六色真好看！
+        </div>
+      </div>
+
+      <!-- Model Essay -->
+      <div class="essay-model">
+        <div class="essay-model-header">📖 范文朗读</div>
+        <button class="essay-model-audio">🔊 听范文朗读</button>
+        <div class="essay-model-text">
+          Today is Saturday. I go to the <span class="highlight-word">supermarket</span> with my mom.
+          <br><br>
+          I can see many <span class="highlight-word">fruits</span>: red <span class="highlight-word">apples</span>, yellow <span class="highlight-word">bananas</span>, and <span class="highlight-word">oranges</span>.
+          <br><br>
+          I <span class="highlight-word">like</span> <span class="highlight-word">oranges</span> very much!
+        </div>
+      </div>
+
+      <!-- Writing Area -->
+      <div class="essay-writing">
+        <div class="essay-writing-header">✍️ 我来写一写</div>
+        <div style="font-size:14px;color:var(--fg-secondary);margin-bottom:var(--space-sm);">提示词（点击可填入作文）：</div>
+        <div class="essay-prompt-words">
+          <button class="essay-prompt-word" onclick="useWord(this)">supermarket</button>
+          <button class="essay-prompt-word" onclick="useWord(this)">fruits</button>
+          <button class="essay-prompt-word" onclick="useWord(this)">apples</button>
+          <button class="essay-prompt-word" onclick="useWord(this)">bananas</button>
+          <button class="essay-prompt-word" onclick="useWord(this)">oranges</button>
+          <button class="essay-prompt-word" onclick="useWord(this)">like</button>
+          <button class="essay-prompt-word" onclick="useWord(this)">buy</button>
+        </div>
+        <textarea class="essay-textarea" placeholder="在这里输入你的作文...&#10;&#10;例如: Today I go to the supermarket..." id="essayTextarea"></textarea>
+        <div class="essay-stats">
+          <span>已用单词: <span id="usedWords">0</span>/7</span>
+          <span>字数: <span id="wordCount">0</span></span>
+        </div>
+        <div class="essay-submit">
+          <button class="btn btn-primary">📤 提交作文</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+function useWord(el) {
+  const textarea = document.getElementById('essayTextarea');
+  const value = el.textContent;
+  if (textarea.value.length > 0 && !textarea.value.endsWith(' ')) {
+    textarea.value += ' ';
+  }
+  textarea.value += value + ' ';
+  el.classList.add('used');
+  updateStats();
+}
+
+function updateStats() {
+  const text = document.getElementById('essayTextarea').value;
+  const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+  document.getElementById('wordCount').textContent = words.length;
+  const usedCount = document.querySelectorAll('.essay-prompt-word.used').length;
+  document.getElementById('usedWords').textContent = usedCount;
+}
+</script>
+</body>
+</html>

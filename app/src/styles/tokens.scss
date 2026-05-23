@@ -1,0 +1,69 @@
+// WordWorld Design Tokens - SCSS version
+
+// Brand Colors
+$primary: #4A90D9;
+$primary-light: #6BA5E7;
+$primary-dark: #3A7BC8;
+$secondary: #FF8C42;
+$secondary-light: #FFA96B;
+$secondary-dark: #E07530;
+$success: #5CB85C;
+$success-light: #7ACC7A;
+$warning: #FFD93D;
+$warning-light: #FFE56E;
+$error: #FF6B6B;
+$error-light: #FF8F8F;
+
+// Semantic Colors (letter annotation)
+$vowel: #FF6B6B;
+$consonant: #4A90D9;
+$silent: #999999;
+$syllable-sep: #FF8C42;
+
+// Surface Colors
+$bg: #F8F9FA;
+$surface: #FFFFFF;
+$surface-hover: #F0F4F8;
+$border: #E8ECF0;
+$border-light: #F0F2F5;
+
+// Text Colors
+$fg: #2C3E50;
+$fg-secondary: #7F8C8D;
+$fg-tertiary: #B0BEC5;
+$fg-inverse: #FFFFFF;
+
+// Typography
+$font-display: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive;
+$font-body: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+$font-mono: 'SF Mono', 'Menlo', monospace;
+
+// Spacing (8px scale, converted to rpx for uni-app)
+$space-xs: 8rpx;
+$space-sm: 16rpx;
+$space-md: 24rpx;
+$space-lg: 32rpx;
+$space-xl: 40rpx;
+$space-2xl: 48rpx;
+$space-3xl: 64rpx;
+$space-4xl: 80rpx;
+$space-5xl: 96rpx;
+
+// Border Radius
+$radius-sm: 16rpx;
+$radius-md: 24rpx;
+$radius-lg: 32rpx;
+$radius-xl: 48rpx;
+$radius-pill: 999rpx;
+$radius-circle: 50%;
+
+// Shadows
+$shadow-sm: 0 2rpx 6rpx rgba(0, 0, 0, 0.06);
+$shadow-md: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
+$shadow-lg: 0 16rpx 48rpx rgba(0, 0, 0, 0.12);
+$shadow-xl: 0 24rpx 80rpx rgba(0, 0, 0, 0.15);
+
+// Transitions
+$transition-fast: 150ms ease;
+$transition-normal: 250ms ease;
+$transition-slow: 400ms ease;

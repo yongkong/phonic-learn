@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WordWorld - 个人中心</title>
+<link rel="stylesheet" href="../css/tokens.css">
+<style>
+  .profile-screen {
+    min-height: 100%;
+    background: var(--bg);
+    padding-bottom: 90px;
+  }
+  .profile-header {
+    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
+    padding: 0 var(--space-xl) var(--space-xl);
+    padding-top: 8px;
+    color: white;
+    text-align: center;
+  }
+  .profile-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm) 0;
+    margin-bottom: var(--space-lg);
+  }
+  .profile-topbar-title {
+    font-size: 17px;
+    font-weight: 700;
+  }
+  .profile-topbar-btn {
+    font-size: 20px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .profile-avatar-section {
+    padding: var(--space-lg) 0;
+  }
+  .profile-avatar-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    margin: 0 auto var(--space-md);
+    border: 3px solid rgba(255,255,255,0.5);
+  }
+  .profile-name {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: var(--space-xs);
+  }
+  .profile-level {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 14px;
+    border-radius: var(--radius-pill);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+  }
+  .profile-xp-bar {
+    background: rgba(255,255,255,0.2);
+    border-radius: var(--radius-pill);
+    height: 8px;
+    overflow: hidden;
+    max-width: 200px;
+    margin: 0 auto;
+  }
+  .profile-xp-fill {
+    height: 100%;
+    width: 75%;
+    background: var(--warning);
+    border-radius: var(--radius-pill);
+  }
+  .profile-xp-text {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-top: 4px;
+  }
+  /* Stats Row */
+  .profile-stats {
+    display: flex;
+    gap: var(--space-sm);
+    padding: 0 var(--space-xl);
+    margin-top: var(--space-lg);
+  }
+  .profile-stat {
+    flex: 1;
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+  }
+  .profile-stat-value {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--primary);
+  }
+  .profile-stat-label {
+    font-size: 12px;
+    color: var(--fg-secondary);
+    margin-top: 2px;
+  }
+  /* Chart Section */
+  .profile-chart {
+    margin: var(--space-lg) var(--space-xl);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+  }
+  .profile-chart-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: var(--space-md);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .profile-chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 80px;
+    margin-bottom: var(--space-sm);
+  }
+  .chart-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .chart-bar-fill {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    background: var(--primary);
+    min-height: 4px;
+    transition: height 0.5s ease;
+  }
+  .chart-bar-fill.low { background: var(--fg-tertiary); }
+  .chart-bar-fill.high { background: var(--success); }
+  .chart-bar-label {
+    font-size: 11px;
+    color: var(--fg-tertiary);
+  }
+  .chart-bar-value {
+    font-size: 10px;
+    color: var(--fg-secondary);
+    font-weight: 600;
+  }
+  /* Menu List */
+  .profile-menu {
+    margin: 0 var(--space-xl);
+  }
+  .profile-menu-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-lg) 0;
+    border-bottom: 1px solid var(--border-light);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .profile-menu-item:last-child { border-bottom: none; }
+  .profile-menu-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+  .profile-menu-icon.blue { background: rgba(74, 144, 217, 0.1); }
+  .profile-menu-icon.red { background: rgba(255, 107, 107, 0.1); }
+  .profile-menu-icon.green { background: rgba(92, 184, 92, 0.1); }
+  .profile-menu-icon.orange { background: rgba(255, 140, 66, 0.1); }
+  .profile-menu-icon.purple { background: rgba(155, 89, 182, 0.1); }
+  .profile-menu-icon.gold { background: rgba(255, 217, 61, 0.2); }
+  .profile-menu-info { flex: 1; }
+  .profile-menu-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--fg);
+  }
+  .profile-menu-subtitle {
+    font-size: 13px;
+    color: var(--fg-secondary);
+    margin-top: 1px;
+  }
+  .profile-menu-badge {
+    font-size: 13px;
+    color: var(--fg-tertiary);
+    font-weight: 600;
+  }
+  .profile-menu-arrow {
+    font-size: 16px;
+    color: var(--fg-tertiary);
+  }
+  /* Settings */
+  .profile-settings {
+    margin: var(--space-lg) var(--space-xl) 0;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+  }
+  .profile-settings-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: var(--space-md);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-label {
+    font-size: 15px;
+    color: var(--fg);
+  }
+  .settings-value {
+    font-size: 15px;
+    color: var(--fg-secondary);
+    font-weight: 500;
+  }
+  /* Toggle Switch */
+  .toggle-switch {
+    width: 50px;
+    height: 30px;
+    border-radius: 15px;
+    background: var(--border);
+    position: relative;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: var(--transition-fast);
+  }
+  .toggle-switch.active { background: var(--success); }
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: white;
+    top: 2px;
+    left: 2px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-fast);
+  }
+  .toggle-switch.active::after {
+    left: 22px;
+  }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="dynamic-island"></div>
+  <div class="status-bar light">
+    <span class="status-time">9:41</span>
+    <span class="status-icons">
+      <svg width="16" height="12" viewBox="0 0 16 12"><rect x="0" y="6" width="3" height="6" rx="0.5" fill="currentColor" opacity="0.3"/><rect x="4.5" y="4" width="3" height="8" rx="0.5" fill="currentColor" opacity="0.5"/><rect x="9" y="2" width="3" height="10" rx="0.5" fill="currentColor" opacity="0.7"/><rect x="13" y="0" width="3" height="12" rx="0.5" fill="currentColor"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 3.6C10.2 3.6 12.2 4.6 13.5 6.2L15 4.5C13.3 2.5 10.8 1.2 8 1.2S2.7 2.5 1 4.5L2.5 6.2C3.8 4.6 5.8 3.6 8 3.6z" fill="currentColor" opacity="0.3"/><path d="M8 7c1.3 0 2.5.6 3.3 1.5L12.5 9.8C11.4 8.5 9.8 7.7 8 7.7s-3.4.8-4.5 2.1l1.2-1.3C5.5 7.6 6.7 7 8 7z" fill="currentColor" opacity="0.6"/><circle cx="8" cy="10.8" r="1.2" fill="currentColor"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2" stroke="currentColor" stroke-width="1" fill="none"/><rect x="22" y="4" width="2.5" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="currentColor"/></svg>
+    </span>
+  </div>
+
+  <div class="screen-content">
+    <div class="profile-screen">
+      <!-- Header -->
+      <div class="profile-header">
+        <div class="profile-topbar">
+          <span></span>
+          <span class="profile-topbar-title">我的</span>
+          <button class="profile-topbar-btn">⚙️</button>
+        </div>
+        <div class="profile-avatar-section">
+          <div class="profile-avatar-large">🧒</div>
+          <div class="profile-name">小明</div>
+          <div class="profile-level">Lv.5 单词小达人</div>
+          <div class="profile-xp-bar">
+            <div class="profile-xp-fill"></div>
+          </div>
+          <div class="profile-xp-text">距 Lv.6 还需 80 经验</div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="profile-stat-value">286</div>
+          <div class="profile-stat-label">已学词</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-value">198</div>
+          <div class="profile-stat-label">掌握词</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-value">88</div>
+          <div class="profile-stat-label">待复习</div>
+        </div>
+      </div>
+
+      <!-- Weekly Chart -->
+      <div class="profile-chart">
+        <div class="profile-chart-title">📈 本周学习</div>
+        <div class="profile-chart-bars">
+          <div class="chart-bar">
+            <div class="chart-bar-value">15</div>
+            <div class="chart-bar-fill" style="height:60%;"></div>
+            <div class="chart-bar-label">一</div>
+          </div>
+          <div class="chart-bar">
+            <div class="chart-bar-value">20</div>
+            <div class="chart-bar-fill high" style="height:80%;"></div>
+            <div class="chart-bar-label">二</div>
+          </div>
+          <div class="chart-bar">
+            <div class="chart-bar-value">12</div>
+            <div class="chart-bar-fill" style="height:48%;"></div>
+            <div class="chart-bar-label">三</div>
+          </div>
+          <div class="chart-bar">
+            <div class="chart-bar-value">18</div>
+            <div class="chart-bar-fill" style="height:72%;"></div>
+            <div class="chart-bar-label">四</div>
+          </div>
+          <div class="chart-bar">
+            <div class="chart-bar-value">20</div>
+            <div class="chart-bar-fill high" style="height:80%;"></div>
+            <div class="chart-bar-label">五</div>
+          </div>
+          <div class="chart-bar">
+            <div class="chart-bar-value">8</div>
+            <div class="chart-bar-fill low" style="height:32%;"></div>
+            <div class="chart-bar-label">六</div>
+          </div>
+          <div class="chart-bar">
+            <div class="chart-bar-fill low" style="height:4px;"></div>
+            <div class="chart-bar-label">日</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Menu Items -->
+      <div class="profile-menu">
+        <div class="profile-menu-item">
+          <div class="profile-menu-icon red">📕</div>
+          <div class="profile-menu-info">
+            <div class="profile-menu-title">错词本</div>
+            <div class="profile-menu-subtitle">自动收录做错的单词</div>
+          </div>
+          <span class="profile-menu-badge">88</span>
+          <span class="profile-menu-arrow">›</span>
+        </div>
+        <div class="profile-menu-item">
+          <div class="profile-menu-icon green">🔁</div>
+          <div class="profile-menu-info">
+            <div class="profile-menu-title">艾宾浩斯复习提醒</div>
+            <div class="profile-menu-subtitle">今日待复习: 12词</div>
+          </div>
+          <span class="profile-menu-arrow">›</span>
+        </div>
+        <div class="profile-menu-item">
+          <div class="profile-menu-icon gold">🏆</div>
+          <div class="profile-menu-info">
+            <div class="profile-menu-title">勋章墙</div>
+            <div class="profile-menu-subtitle">🍎水果达人 🏫校园通 🔥连续7天</div>
+          </div>
+          <span class="profile-menu-badge">12</span>
+          <span class="profile-menu-arrow">›</span>
+        </div>
+        <div class="profile-menu-item">
+          <div class="profile-menu-icon purple">📖</div>
+          <div class="profile-menu-info">
+            <div class="profile-menu-title">我的作文集</div>
+            <div class="profile-menu-subtitle">记录每次写作进步</div>
+          </div>
+          <span class="profile-menu-badge">5</span>
+          <span class="profile-menu-arrow">›</span>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div class="profile-settings">
+        <div class="profile-settings-title">⚙️ 学习设置</div>
+        <div class="settings-row">
+          <span class="settings-label">每日学习量</span>
+          <span class="settings-value">20词</span>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">学习提醒</span>
+          <span class="settings-value">16:00</span>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">音效</span>
+          <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">家长模式</span>
+          <span class="profile-menu-arrow">›</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-item">
+      <span class="tab-icon">📖</span>
+      <span class="tab-label">学习</span>
+    </button>
+    <button class="tab-item">
+      <span class="tab-icon">🎮</span>
+      <span class="tab-label">练习</span>
+    </button>
+    <button class="tab-item">
+      <span class="tab-icon">✏️</span>
+      <span class="tab-label">作文</span>
+    </button>
+    <button class="tab-item active">
+      <span class="tab-icon">👤</span>
+      <span class="tab-label">我的</span>
+    </button>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+</body>
+</html>

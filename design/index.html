@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WordWorld 单词世界 — 多屏原型展示</title>
+<style>
+  :root {
+    --bg: #F0F2F5;
+    --surface: #FFFFFF;
+    --fg: #1a1a2e;
+    --fg-secondary: #64748b;
+    --primary: #4A90D9;
+    --primary-dark: #3A7BC8;
+    --border: #E2E8F0;
+    --radius-lg: 16px;
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    min-height: 100vh;
+  }
+
+  /* Hero Header */
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, #6BA5E7 50%, #8BB8F0 100%);
+    padding: 48px 24px 56px;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -20%;
+    width: 140%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .hero-logo {
+    font-size: 56px;
+    margin-bottom: 8px;
+  }
+  .hero-title {
+    font-family: -apple-system, BlinkMacSystemFont, 'Comic Sans MS', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .hero-subtitle {
+    font-size: 18px;
+    opacity: 0.9;
+    font-weight: 500;
+  }
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    padding: 6px 16px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+  }
+
+  /* Screen Grid */
+  .gallery-section {
+    padding: 40px 24px 60px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+  .gallery-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .gallery-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .gallery-header p {
+    color: var(--fg-secondary);
+    font-size: 15px;
+  }
+
+  /* Navigation */
+  .screen-nav {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+  .screen-nav-btn {
+    padding: 10px 20px;
+    border: 2px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fg-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .screen-nav-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .screen-nav-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+  }
+
+  /* Gallery Grid */
+  .gallery-grid {
+    display: flex;
+    gap: 32px;
+    overflow-x: auto;
+    padding: 8px 0 24px;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  .gallery-grid::-webkit-scrollbar { height: 6px; }
+  .gallery-grid::-webkit-scrollbar-track { background: transparent; }
+  .gallery-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Screen Card */
+  .screen-card {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .screen-card-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fg-secondary);
+    text-align: center;
+  }
+  .screen-card-label span {
+    display: block;
+    font-size: 15px;
+    color: var(--fg);
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .screen-frame {
+    position: relative;
+    width: 280px;
+    height: 603px;
+    background: #1a1a1a;
+    border-radius: 40px;
+    padding: 8px;
+    box-shadow:
+      0 0 0 2px #333,
+      0 12px 40px rgba(0,0,0,0.2);
+  }
+  .screen-frame-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 32px;
+    overflow: hidden;
+    background: #F8F9FA;
+    position: relative;
+  }
+  .screen-frame-inner iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  .screen-frame .dynamic-island-mock {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 26px;
+    background: #000;
+    border-radius: 14px;
+    z-index: 10;
+    pointer-events: none;
+  }
+  .screen-frame .side-btn-right {
+    position: absolute;
+    right: -2px;
+    top: 140px;
+    width: 3px;
+    height: 56px;
+    background: #333;
+    border-radius: 0 2px 2px 0;
+  }
+  .screen-frame .side-btn-left-1 {
+    position: absolute;
+    left: -2px;
+    top: 124px;
+    width: 3px;
+    height: 22px;
+    background: #333;
+    border-radius: 2px 0 0 2px;
+  }
+  .screen-frame .side-btn-left-2 {
+    position: absolute;
+    left: -2px;
+    top: 170px;
+    width: 3px;
+    height: 22px;
+    background: #333;
+    border-radius: 2px 0 0 2px;
+  }
+
+  /* Info Section */
+  .info-section {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+  .info-card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .info-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .info-card p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--fg-secondary);
+  }
+  .info-card ul {
+    list-style: none;
+    padding: 0;
+  }
+  .info-card li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .info-card li:last-child { border-bottom: none; }
+  .info-card li .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+    flex-shrink: 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 13px;
+    color: var(--fg-tertiary);
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 768px) {
+    .gallery-grid {
+      flex-direction: column;
+      align-items: center;
+    }
+    .screen-frame {
+      width: 300px;
+      height: 646px;
+    }
+    .hero { padding: 32px 16px 40px; }
+    .hero-title { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-logo">🍎</div>
+  <div class="hero-title">WordWorld 单词世界</div>
+  <div class="hero-subtitle">小学英语单词记忆 App — MVP 交互原型</div>
+  <div class="hero-tag">📱 iOS 原型 · 7 个核心页面 · 完整交互</div>
+</div>
+
+<!-- Gallery -->
+<div class="gallery-section">
+  <div class="gallery-header">
+    <h2>页面总览</h2>
+    <p>横向滑动浏览所有核心页面，点击页面可交互</p>
+  </div>
+
+  <div class="screen-nav">
+    <button class="screen-nav-btn active" onclick="scrollToScreen(0)">启动页</button>
+    <button class="screen-nav-btn" onclick="scrollToScreen(1)">年级注册</button>
+    <button class="screen-nav-btn" onclick="scrollToScreen(2)">场景地图</button>
+    <button class="screen-nav-btn" onclick="scrollToScreen(3)">五维学习</button>
+    <button class="screen-nav-btn" onclick="scrollToScreen(4)">练习游戏</button>
+    <button class="screen-nav-btn" onclick="scrollToScreen(5)">个人中心</button>
+    <button class="screen-nav-btn" onclick="scrollToScreen(6)">看图作文</button>
+  </div>
+
+  <div class="gallery-grid" id="galleryGrid">
+    <div class="screen-card" id="screen-0">
+      <div class="screen-card-label">
+        <span>Screen 01</span>
+        启动页 & 引导
+      </div>
+      <div class="screen-frame">
+        <div class="dynamic-island-mock"></div>
+        <div class="side-btn-right"></div>
+        <div class="side-btn-left-1"></div>
+        <div class="side-btn-left-2"></div>
+        <div class="screen-frame-inner">
+          <iframe src="screens/01-splash.html" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen-card" id="screen-1">
+      <div class="screen-card-label">
+        <span>Screen 02</span>
+        年级注册
+      </div>
+      <div class="screen-frame">
+        <div class="dynamic-island-mock"></div>
+        <div class="side-btn-right"></div>
+        <div class="side-btn-left-1"></div>
+        <div class="side-btn-left-2"></div>
+        <div class="screen-frame-inner">
+          <iframe src="screens/02-register.html" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen-card" id="screen-2">
+      <div class="screen-card-label">
+        <span>Screen 03</span>
+        场景地图首页
+      </div>
+      <div class="screen-frame">
+        <div class="dynamic-island-mock"></div>
+        <div class="side-btn-right"></div>
+        <div class="side-btn-left-1"></div>
+        <div class="side-btn-left-2"></div>
+        <div class="screen-frame-inner">
+          <iframe src="screens/03-home.html" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen-card" id="screen-3">
+      <div class="screen-card-label">
+        <span>Screen 04</span>
+        五维学习（形义音记用）
+      </div>
+      <div class="screen-frame">
+        <div class="dynamic-island-mock"></div>
+        <div class="side-btn-right"></div>
+        <div class="side-btn-left-1"></div>
+        <div class="side-btn-left-2"></div>
+        <div class="screen-frame-inner">
+          <iframe src="screens/04-learning.html" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen-card" id="screen-4">
+      <div class="screen-card-label">
+        <span>Screen 05</span>
+        超市大冒险练习
+      </div>
+      <div class="screen-frame">
+        <div class="dynamic-island-mock"></div>
+        <div class="side-btn-right"></div>
+        <div class="side-btn-left-1"></div>
+        <div class="side-btn-left-2"></div>
+        <div class="screen-frame-inner">
+          <iframe src="screens/05-practice.html" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen-card" id="screen-5">
+      <div class="screen-card-label">
+        <span>Screen 06</span>
+        个人中心
+      </div>
+      <div class="screen-frame">
+        <div class="dynamic-island-mock"></div>
+        <div class="side-btn-right"></div>
+        <div class="side-btn-left-1"></div>
+        <div class="side-btn-left-2"></div>
+        <div class="screen-frame-inner">
+          <iframe src="screens/06-profile.html" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen-card" id="screen-6">
+      <div class="screen-card-label">
+        <span>Screen 07</span>
+        看图作文
+      </div>
+      <div class="screen-frame">
+        <div class="dynamic-island-mock"></div>
+        <div class="side-btn-right"></div>
+        <div class="side-btn-left-1"></div>
+        <div class="side-btn-left-2"></div>
+        <div class="screen-frame-inner">
+          <iframe src="screens/07-essay.html" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Info Section -->
+<div class="info-section">
+  <div class="info-card">
+    <h3>📱 产品概述</h3>
+    <p>WordWorld 单词世界是一款面向小学生的英语单词记忆 App，采用场景化学习地图和五维记忆法（形→义→音→记→用），让每个单词都有故事、有场景、有温度。本原型覆盖 7 个核心页面，展示完整的用户学习流程。</p>
+  </div>
+
+  <div class="info-card">
+    <h3>🗺️ 页面清单</h3>
+    <ul>
+      <li><span class="dot"></span> <b>启动页 & 引导页</b> — 品牌展示 + 3 屏引导，介绍核心卖点</li>
+      <li><span class="dot"></span> <b>年级注册页</b> — 昵称输入 + 6 年级选择，难度适配</li>
+      <li><span class="dot"></span> <b>场景地图首页</b> — 学习进度 + 场景解锁路径 + 每日挑战</li>
+      <li><span class="dot"></span> <b>五维学习卡片</b> — 核心功能，5 个维度完整学习一个单词（orange）</li>
+      <li><span class="dot"></span> <b>情景练习</b> — 超市大冒险游戏，互动式单词练习</li>
+      <li><span class="dot"></span> <b>个人中心</b> — 学习统计 + 错词本 + 勋章墙 + 艾宾浩斯复习</li>
+      <li><span class="dot"></span> <b>看图作文</b> — 分级写作练习，范文朗读 + 提示词辅助</li>
+    </ul>
+  </div>
+
+  <div class="info-card">
+    <h3>🎨 设计系统</h3>
+    <ul>
+      <li><span class="dot"></span> <b>主色调</b> — 温暖蓝 #4A90D9 + 活力橙 #FF8C42 + 成长绿 #5CB85C</li>
+      <li><span class="dot"></span> <b>显示字体</b> — Comic Sans MS / Chalkboard SE（儿童友好）</li>
+      <li><span class="dot"></span> <b>圆角</b> — 卡片 16px，按钮胶囊 24px</li>
+      <li><span class="dot"></span> <b>框架</b> — iPhone 15 Pro（390 × 844），Dynamic Island</li>
+    </ul>
+  </div>
+
+  <div class="info-card">
+    <h3>🔧 交互特性</h3>
+    <ul>
+      <li><span class="dot"></span> 引导页滑动切换 + 完成进入注册</li>
+      <li><span class="dot"></span> 年级选择卡片高亮选中态</li>
+      <li><span class="dot"></span> 五维学习 5 个维度 Tab 切换，含真实交互（跟读打分、拼写填空、选词练习）</li>
+      <li><span class="dot"></span> 练习游戏选项点击反馈（正确/错误动画）</li>
+      <li><span class="dot"></span> 个人中心 Toggle 开关切换</li>
+      <li><span class="dot"></span> 看图作文提示词点击填入 + 字数统计</li>
+    </ul>
+  </div>
+</div>
+
+<div class="footer">
+  WordWorld 单词世界 · MVP 交互原型 · 基于设计方案构建
+</div>
+
+<script>
+function scrollToScreen(index) {
+  const card = document.getElementById('screen-' + index);
+  if (card) {
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+  // Update nav buttons
+  document.querySelectorAll('.screen-nav-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i === index);
+  });
+}
+</script>
+</body>
+</html>

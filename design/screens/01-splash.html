@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WordWorld - 启动页</title>
+<link rel="stylesheet" href="../css/tokens.css">
+<style>
+  .splash-screen {
+    background: linear-gradient(180deg, #E8F4FD 0%, #F8F9FA 40%);
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .splash-hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px var(--space-xl);
+    padding-top: 60px;
+  }
+  .splash-globe {
+    font-size: 80px;
+    margin-bottom: var(--space-lg);
+    animation: bounce 2s ease infinite;
+  }
+  .splash-books {
+    font-size: 48px;
+    position: absolute;
+    top: 100px;
+    right: 60px;
+    animation: pulse 3s ease infinite;
+  }
+  .splash-title {
+    font-family: var(--font-display);
+    font-size: 42px;
+    font-weight: bold;
+    color: var(--primary);
+    margin-bottom: var(--space-xs);
+  }
+  .splash-subtitle {
+    font-size: 20px;
+    color: var(--fg-secondary);
+    margin-bottom: var(--space-3xl);
+  }
+  .splash-tagline {
+    font-size: 18px;
+    color: var(--secondary);
+    font-weight: 600;
+    font-style: italic;
+    padding: var(--space-md) var(--space-xl);
+    background: rgba(255, 140, 66, 0.08);
+    border-radius: var(--radius-pill);
+  }
+  .splash-dots {
+    display: flex;
+    gap: var(--space-sm);
+    margin: var(--space-3xl) 0;
+  }
+  .splash-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: var(--transition-normal);
+  }
+  .splash-dot.active {
+    background: var(--primary);
+    width: 28px;
+    border-radius: 5px;
+  }
+  .splash-bottom {
+    padding: 0 var(--space-xl) 50px;
+    width: 100%;
+  }
+  .splash-bottom .btn {
+    width: 100%;
+  }
+  /* Onboarding Pages */
+  .onboarding-pages {
+    display: none;
+    flex-direction: column;
+    min-height: 100%;
+  }
+  .onboarding-pages.active {
+    display: flex;
+  }
+  .onboarding-page {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px var(--space-2xl);
+    text-align: center;
+  }
+  .onboarding-illustration {
+    width: 240px;
+    height: 200px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-3xl);
+    position: relative;
+    overflow: hidden;
+  }
+  .onboarding-illustration.scene-1 {
+    background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+  }
+  .onboarding-illustration.scene-2 {
+    background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+  }
+  .onboarding-illustration.scene-3 {
+    background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+  }
+  .onboarding-illustration .big-emoji {
+    font-size: 72px;
+  }
+  .onboarding-illustration .small-emoji {
+    position: absolute;
+    font-size: 32px;
+  }
+  .onboarding-illustration .small-emoji.top-left { top: 20px; left: 24px; }
+  .onboarding-illustration .small-emoji.top-right { top: 16px; right: 20px; }
+  .onboarding-illustration .small-emoji.bottom-left { bottom: 20px; left: 28px; }
+  .onboarding-illustration .small-emoji.bottom-right { bottom: 16px; right: 24px; }
+  .onboarding-title {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: bold;
+    color: var(--fg);
+    margin-bottom: var(--space-md);
+  }
+  .onboarding-desc {
+    font-size: 16px;
+    color: var(--fg-secondary);
+    line-height: 1.6;
+    max-width: 280px;
+  }
+  .onboarding-skip {
+    position: absolute;
+    top: 52px;
+    right: var(--space-xl);
+    color: var(--fg-tertiary);
+    font-size: 15px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: var(--font-body);
+    z-index: 10;
+  }
+  .onboarding-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--space-xl) 50px;
+    width: 100%;
+  }
+  .onboarding-next {
+    padding: 12px 28px;
+  }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="dynamic-island"></div>
+  <div class="status-bar dark">
+    <span class="status-time">9:41</span>
+    <span class="status-icons">
+      <svg width="16" height="12" viewBox="0 0 16 12"><rect x="0" y="6" width="3" height="6" rx="0.5" fill="currentColor" opacity="0.3"/><rect x="4.5" y="4" width="3" height="8" rx="0.5" fill="currentColor" opacity="0.5"/><rect x="9" y="2" width="3" height="10" rx="0.5" fill="currentColor" opacity="0.7"/><rect x="13" y="0" width="3" height="12" rx="0.5" fill="currentColor"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 3.6C10.2 3.6 12.2 4.6 13.5 6.2L15 4.5C13.3 2.5 10.8 1.2 8 1.2S2.7 2.5 1 4.5L2.5 6.2C3.8 4.6 5.8 3.6 8 3.6z" fill="currentColor" opacity="0.3"/><path d="M8 7c1.3 0 2.5.6 3.3 1.5L12.5 9.8C11.4 8.5 9.8 7.7 8 7.7s-3.4.8-4.5 2.1l1.2-1.3C5.5 7.6 6.7 7 8 7z" fill="currentColor" opacity="0.6"/><circle cx="8" cy="10.8" r="1.2" fill="currentColor"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2" stroke="currentColor" stroke-width="1" fill="none"/><rect x="22" y="4" width="2.5" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="currentColor"/></svg>
+    </span>
+  </div>
+
+  <!-- Splash Page -->
+  <div class="screen-content" id="splashPage">
+    <div class="splash-screen">
+      <div class="splash-hero">
+        <span class="splash-books">📚</span>
+        <div class="splash-globe">🌍</div>
+        <div class="splash-title">WordWorld</div>
+        <div class="splash-subtitle">单词世界</div>
+        <div class="splash-tagline">"让每个单词都有故事"</div>
+        <div class="splash-dots">
+          <span class="splash-dot active"></span>
+          <span class="splash-dot"></span>
+          <span class="splash-dot"></span>
+        </div>
+      </div>
+      <div class="splash-bottom">
+        <button class="btn btn-primary" onclick="showOnboarding()">开始冒险之旅 🚀</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Onboarding Pages -->
+  <div class="screen-content" id="onboardingPages" style="display:none;">
+    <button class="onboarding-skip" onclick="finishOnboarding()">跳过</button>
+
+    <!-- Page 1: 生活场景学单词 -->
+    <div class="onboarding-page" id="obPage1">
+      <div class="onboarding-illustration scene-1">
+        <span class="big-emoji">🛒</span>
+        <span class="small-emoji top-left">🍎</span>
+        <span class="small-emoji top-right">🥦</span>
+        <span class="small-emoji bottom-left">👧</span>
+        <span class="small-emoji bottom-right">👩</span>
+      </div>
+      <div class="onboarding-title">生活场景学单词</div>
+      <div class="onboarding-desc">在超市、公园、学校里<br>认识 <span style="color:var(--primary);font-weight:700;">1200</span> 个核心单词</div>
+    </div>
+
+    <!-- Page 2: 五维记忆不遗忘 -->
+    <div class="onboarding-page" id="obPage2" style="display:none;">
+      <div class="onboarding-illustration scene-2">
+        <span class="big-emoji">🧩</span>
+        <span class="small-emoji top-left">👁️</span>
+        <span class="small-emoji top-right">👂</span>
+        <span class="small-emoji bottom-left">✍️</span>
+        <span class="small-emoji bottom-right">💭</span>
+      </div>
+      <div class="onboarding-title">五维记忆不遗忘</div>
+      <div class="onboarding-desc">看形、听音、联想、运用<br>单词<span style="color:var(--success);font-weight:700;">记得牢</span></div>
+    </div>
+
+    <!-- Page 3: 学了就会用 -->
+    <div class="onboarding-page" id="obPage3" style="display:none;">
+      <div class="onboarding-illustration scene-3">
+        <span class="big-emoji">✏️</span>
+        <span class="small-emoji top-left">📝</span>
+        <span class="small-emoji top-right">📖</span>
+        <span class="small-emoji bottom-left">😊</span>
+        <span class="small-emoji bottom-right">🎉</span>
+      </div>
+      <div class="onboarding-title">学了就会用</div>
+      <div class="onboarding-desc">用学过的单词写看图作文<br><span style="color:var(--secondary);font-weight:700;">学以致用</span>，快乐进步</div>
+    </div>
+
+    <div class="onboarding-nav">
+      <div class="splash-dots" id="onboardDots">
+        <span class="splash-dot active"></span>
+        <span class="splash-dot"></span>
+        <span class="splash-dot"></span>
+      </div>
+      <button class="btn btn-primary btn-sm onboarding-next" id="onboardNext" onclick="nextOnboardPage()">下一步</button>
+    </div>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+let currentOnboardPage = 1;
+const totalOnboardPages = 3;
+
+function showOnboarding() {
+  document.getElementById('splashPage').style.display = 'none';
+  document.getElementById('onboardingPages').style.display = 'flex';
+}
+
+function nextOnboardPage() {
+  if (currentOnboardPage < totalOnboardPages) {
+    document.getElementById('obPage' + currentOnboardPage).style.display = 'none';
+    currentOnboardPage++;
+    document.getElementById('obPage' + currentOnboardPage).style.display = 'flex';
+    // Update dots
+    const dots = document.getElementById('onboardDots').children;
+    for (let i = 0; i < dots.length; i++) {
+      dots[i].classList.toggle('active', i < currentOnboardPage);
+    }
+    if (currentOnboardPage === totalOnboardPages) {
+      document.getElementById('onboardNext').textContent = '开始学习 🎯';
+      document.getElementById('onboardNext').onclick = finishOnboarding;
+    }
+  } else {
+    finishOnboarding();
+  }
+}
+
+function finishOnboarding() {
+  // In a real app, this would navigate to the grade selection
+  // For prototype, show a brief message
+  const content = document.getElementById('onboardingPages') || document.getElementById('splashPage');
+  content.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center;"><div><div style="font-size:48px;margin-bottom:16px;">✨</div><div style="font-size:18px;color:var(--fg-secondary);">欢迎来到 WordWorld！<br>（原型演示 — 查看首页浏览其他页面）</div></div></div>';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WordWorld - 情景练习</title>
+<link rel="stylesheet" href="../css/tokens.css">
+<style>
+  .practice-screen {
+    min-height: 100%;
+    background: var(--bg);
+    padding-bottom: 90px;
+  }
+  .practice-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border-light);
+    padding: 4px var(--space-xl) var(--space-md);
+  }
+  .practice-header-title {
+    font-size: 17px;
+    font-weight: 700;
+    text-align: center;
+    padding-top: var(--space-sm);
+  }
+  .practice-section {
+    padding: var(--space-lg) var(--space-xl);
+  }
+  .practice-section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--fg-secondary);
+    margin-bottom: var(--space-md);
+  }
+  .practice-mode-card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: var(--transition-normal);
+  }
+  .practice-mode-card:active {
+    transform: scale(0.98);
+    box-shadow: var(--shadow-md);
+  }
+  .practice-mode-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+  .practice-mode-icon.blue { background: rgba(74, 144, 217, 0.1); }
+  .practice-mode-icon.orange { background: rgba(255, 140, 66, 0.1); }
+  .practice-mode-icon.green { background: rgba(92, 184, 92, 0.1); }
+  .practice-mode-icon.purple { background: rgba(155, 89, 182, 0.1); }
+  .practice-mode-icon.red { background: rgba(255, 107, 107, 0.1); }
+  .practice-mode-icon.gold { background: rgba(255, 217, 61, 0.2); }
+  .practice-mode-info {
+    flex: 1;
+  }
+  .practice-mode-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--fg);
+  }
+  .practice-mode-desc {
+    font-size: 13px;
+    color: var(--fg-secondary);
+    margin-top: 2px;
+  }
+  .practice-mode-meta {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: 4px;
+  }
+  .practice-mode-arrow {
+    font-size: 20px;
+    color: var(--fg-tertiary);
+  }
+  /* Game Screen (Supermarket Adventure) */
+  .game-screen {
+    min-height: 100%;
+    background: linear-gradient(180deg, #FFF8E1 0%, var(--bg) 20%);
+    padding-bottom: 30px;
+  }
+  .game-header {
+    background: var(--secondary);
+    padding: 4px var(--space-xl) var(--space-md);
+    color: white;
+  }
+  .game-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm) 0;
+  }
+  .game-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: bold;
+  }
+  .game-timer {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+  }
+  .game-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-sm);
+  }
+  .game-hearts {
+    font-size: 20px;
+    letter-spacing: 4px;
+  }
+  .game-score {
+    font-size: 18px;
+    font-weight: 700;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 14px;
+    border-radius: var(--radius-pill);
+  }
+  .game-content {
+    padding: var(--space-lg) var(--space-xl);
+  }
+  .game-scene {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-lg);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+  }
+  .game-scene-illustration {
+    font-size: 48px;
+    letter-spacing: 8px;
+    margin-bottom: var(--space-md);
+    line-height: 1.4;
+  }
+  .game-task-label {
+    font-size: 15px;
+    color: var(--fg-secondary);
+    margin-bottom: var(--space-xs);
+  }
+  .game-task {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--secondary);
+    font-family: var(--font-display);
+  }
+  .game-task-list {
+    background: var(--bg);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    margin: var(--space-md) 0;
+    text-align: left;
+  }
+  .game-task-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) 0;
+    font-size: 15px;
+  }
+  .game-task-item.done { color: var(--success); }
+  .game-task-item.current { color: var(--secondary); font-weight: 700; }
+  .game-task-item.pending { color: var(--fg-secondary); }
+  /* Game Options Grid */
+  .game-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+  .game-option-card {
+    background: var(--surface);
+    border: 3px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    -webkit-tap-highlight-color: transparent;
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  .game-option-card:active { transform: scale(0.95); }
+  .game-option-card.correct {
+    border-color: var(--success);
+    background: rgba(92, 184, 92, 0.08);
+    animation: pulse 0.5s ease;
+  }
+  .game-option-card.wrong {
+    border-color: var(--error);
+    background: rgba(255, 107, 107, 0.08);
+    animation: shake 0.4s ease;
+  }
+  .game-option-emoji {
+    font-size: 40px;
+  }
+  .game-option-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--fg);
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+  /* Shopping Cart */
+  .game-cart {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    padding: var(--space-md) var(--space-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+    border: 1px solid var(--border-light);
+  }
+  .game-cart-label {
+    font-size: 14px;
+    color: var(--fg-secondary);
+    font-weight: 600;
+  }
+  .game-cart-items {
+    display: flex;
+    gap: 4px;
+    font-size: 24px;
+  }
+  .game-audio-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 12px;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--fg-secondary);
+    cursor: pointer;
+    font-family: var(--font-body);
+    margin-top: var(--space-md);
+    -webkit-tap-highlight-color: transparent;
+  }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="dynamic-island"></div>
+  <div class="status-bar dark">
+    <span class="status-time">9:41</span>
+    <span class="status-icons">
+      <svg width="16" height="12" viewBox="0 0 16 12"><rect x="0" y="6" width="3" height="6" rx="0.5" fill="currentColor" opacity="0.3"/><rect x="4.5" y="4" width="3" height="8" rx="0.5" fill="currentColor" opacity="0.5"/><rect x="9" y="2" width="3" height="10" rx="0.5" fill="currentColor" opacity="0.7"/><rect x="13" y="0" width="3" height="12" rx="0.5" fill="currentColor"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 3.6C10.2 3.6 12.2 4.6 13.5 6.2L15 4.5C13.3 2.5 10.8 1.2 8 1.2S2.7 2.5 1 4.5L2.5 6.2C3.8 4.6 5.8 3.6 8 3.6z" fill="currentColor" opacity="0.3"/><path d="M8 7c1.3 0 2.5.6 3.3 1.5L12.5 9.8C11.4 8.5 9.8 7.7 8 7.7s-3.4.8-4.5 2.1l1.2-1.3C5.5 7.6 6.7 7 8 7z" fill="currentColor" opacity="0.6"/><circle cx="8" cy="10.8" r="1.2" fill="currentColor"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2" stroke="currentColor" stroke-width="1" fill="none"/><rect x="22" y="4" width="2.5" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="currentColor"/></svg>
+    </span>
+  </div>
+
+  <div class="screen-content">
+    <div class="game-screen">
+      <!-- Game Header -->
+      <div class="game-header">
+        <div class="game-topbar">
+          <button class="nav-back" style="color:white;" onclick="showPracticeHub()">← 退出</button>
+          <span class="game-title">🏪 超市大冒险</span>
+          <span class="game-timer">⏱️ <span id="gameTimer">3:25</span></span>
+        </div>
+        <div class="game-stats">
+          <span class="game-hearts" id="gameHearts">❤️❤️❤️</span>
+          <span class="game-score">💰 <span id="gameScore">320</span>分</span>
+        </div>
+      </div>
+
+      <!-- Game Content -->
+      <div class="game-content">
+        <!-- Task Display -->
+        <div class="game-scene">
+          <div class="game-scene-illustration">🍎🍊🍌🍇🍓🍑</div>
+          <div class="game-task-list">
+            <div class="game-task-item done">✅ 买2个 apple</div>
+            <div class="game-task-item current">☐ 买1个 orange</div>
+            <div class="game-task-item pending">☐ 买3个 banana</div>
+            <div class="game-task-item pending">☐ 买1串 grape</div>
+          </div>
+          <div class="game-task-label">请点击 <b style="color:var(--secondary);">"orange"</b> 对应的图片！</div>
+        </div>
+
+        <!-- Options Grid -->
+        <div class="game-options-grid">
+          <div class="game-option-card" onclick="selectOption(this, false)">
+            <span class="game-option-emoji">🍎</span>
+            <span class="game-option-label">apple</span>
+          </div>
+          <div class="game-option-card correct" onclick="selectOption(this, true)">
+            <span class="game-option-emoji">🍊</span>
+            <span class="game-option-label">orange</span>
+          </div>
+          <div class="game-option-card" onclick="selectOption(this, false)">
+            <span class="game-option-emoji">🍌</span>
+            <span class="game-option-label">banana</span>
+          </div>
+          <div class="game-option-card" onclick="selectOption(this, false)">
+            <span class="game-option-emoji">🍇</span>
+            <span class="game-option-label">grape</span>
+          </div>
+        </div>
+
+        <!-- Shopping Cart -->
+        <div class="game-cart">
+          <span class="game-cart-label">🛒 购物车:</span>
+          <div class="game-cart-items">🍎🍎</div>
+        </div>
+
+        <button class="game-audio-btn">🔊 再听一次任务</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+function selectOption(el, isCorrect) {
+  if (el.classList.contains('correct') || el.classList.contains('wrong')) return;
+  if (isCorrect) {
+    el.classList.add('correct');
+    // Update score
+    const scoreEl = document.getElementById('gameScore');
+    scoreEl.textContent = parseInt(scoreEl.textContent) + 50;
+  } else {
+    el.classList.add('wrong');
+    // Remove a heart
+    const hearts = document.getElementById('gameHearts');
+    const count = hearts.textContent.split('❤️').length - 1;
+    if (count > 1) {
+      hearts.textContent = '❤️'.repeat(count - 1);
+    }
+    setTimeout(() => el.classList.remove('wrong'), 600);
+  }
+}
+
+function showPracticeHub() {
+  // In a real app, navigate back
+}
+</script>
+</body>
+</html>

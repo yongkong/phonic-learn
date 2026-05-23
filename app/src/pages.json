@@ -1,0 +1,104 @@
+{
+  "pages": [
+    {
+      "path": "pages/splash/index",
+      "style": {
+        "navigationBarTitleText": "",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/onboarding/index",
+      "style": {
+        "navigationBarTitleText": "",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/register/index",
+      "style": {
+        "navigationBarTitleText": "欢迎"
+      }
+    },
+    {
+      "path": "pages/home/index",
+      "style": {
+        "navigationBarTitleText": "WordWorld"
+      }
+    },
+    {
+      "path": "pages/scene/index",
+      "style": {
+        "navigationBarTitleText": "场景单词"
+      }
+    },
+    {
+      "path": "pages/learn/index",
+      "style": {
+        "navigationBarTitleText": "学习"
+      }
+    },
+    {
+      "path": "pages/summary/index",
+      "style": {
+        "navigationBarTitleText": "学习完成"
+      }
+    },
+    {
+      "path": "pages/practice/index",
+      "style": {
+        "navigationBarTitleText": "练习"
+      }
+    },
+    {
+      "path": "pages/essay/index",
+      "style": {
+        "navigationBarTitleText": "作文"
+      }
+    },
+    {
+      "path": "pages/profile/index",
+      "style": {
+        "navigationBarTitleText": "我的"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "WordWorld",
+    "navigationBarBackgroundColor": "#4A90D9",
+    "backgroundColor": "#F8F9FA"
+  },
+  "tabBar": {
+    "color": "#7F8C8D",
+    "selectedColor": "#4A90D9",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "学习",
+        "iconPath": "static/tab/study.png",
+        "selectedIconPath": "static/tab/study-active.png"
+      },
+      {
+        "pagePath": "pages/practice/index",
+        "text": "练习",
+        "iconPath": "static/tab/practice.png",
+        "selectedIconPath": "static/tab/practice-active.png"
+      },
+      {
+        "pagePath": "pages/essay/index",
+        "text": "作文",
+        "iconPath": "static/tab/essay.png",
+        "selectedIconPath": "static/tab/essay-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "static/tab/profile.png",
+        "selectedIconPath": "static/tab/profile-active.png"
+      }
+    ]
+  }
+}
