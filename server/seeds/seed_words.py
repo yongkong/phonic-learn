@@ -306,8 +306,8 @@ def seed_words(db):
                 {"en": "The orange cat is sleeping.", "cn": "那只橙色的猫正在睡觉。"},
             ],
             "phonic_analysis": {
-                "syllables": ["o", "range"],
-                "syllable_phonetics": ["/ˈɒ/", "/rɪndʒ/"],
+                "syllables": ["or", "ange"],
+                "syllable_phonetics": ["/ˈɒr/", "/ɪndʒ/"],
                 "stress_index": 0,
                 "letter_sounds": [
                     {"letter": "o", "sound": "/ɒ/", "type": "vowel", "color": "red"},
