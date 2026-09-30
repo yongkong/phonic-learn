@@ -125,8 +125,8 @@
       <!-- Dimension Nav -->
       <view class="dimension-nav">
         <button class="btn-prev" :disabled="currentDimension <= 1" @click="prevDimension">上一维</button>
-        <button class="btn-next" @click="nextDimension">
-          {{ currentDimension < 5 ? '下一维' : '完成学习' }}
+        <button class="btn-next" :disabled="advancing" @click="handleNext">
+          {{ advancing ? '处理中…' : currentDimension < 5 ? '下一维' : '完成学习' }}
         </button>
       </view>
     </template>
@@ -136,8 +136,8 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { onLoad, onUnload } from '@dcloudio/uni-app'
-import { getWordDetail } from '@/api/scene'
+import { onLoad, onUnload, onHide } from '@dcloudio/uni-app'
+import { getWordDetail, getSubSceneWords } from '@/api/scene'
 import { DIMENSIONS } from '@/utils/dimensions'
 import { playWordAudio, playSentenceAudio } from '@/utils/audio'
 import { useLearnStore } from '@/stores/learn'
@@ -150,31 +150,59 @@ const learnStore = useLearnStore()
 const word = ref<WordDetail | null>(null)
 const loadState = ref<'loading' | 'ready' | 'error'>('loading')
 const wordId = ref(0)
+const advancing = ref(false)
 const playingWord = ref(false)
 const playingSentence = ref('')
-// 维度状态以 learn store 为单源（工单6 会话流转在其上扩展）
-const { currentDimension } = storeToRefs(learnStore)
+// 维度状态以 learn store 为单源（会话流转见 store 生命周期）
+const { dimension: currentDimension } = storeToRefs(learnStore)
+
+// uni H5 页面栈基于 keep-alive：路由离开触发的是 onHide 而非 onUnload。
+// onHide 也在切后台时触发，故延迟确认栈顶已不是本页才结束会话。
+onHide(() => {
+  setTimeout(() => {
+    const pages = getCurrentPages()
+    const top = pages[pages.length - 1]
+    if (top?.route !== 'pages/learn/index') {
+      learnStore.endLearning()
+    }
+  }, 300)
+})
 
 onUnload(() => {
   stopAudio()
+  // 中途离开：正常结束会话（幂等，全部学完时已结束）
+  learnStore.endLearning()
 })
 
-onLoad((options) => {
+onLoad(async (options) => {
   wordId.value = Number(options?.wordId || 0)
-  learnStore.currentSceneId = Number(options?.sceneId || 0) || null
-  learnStore.currentSubSceneId = Number(options?.subSceneId || 0) || null
-  learnStore.currentWordId = wordId.value || null
-  loadWord()
-})
-
-async function loadWord() {
-  if (!wordId.value) {
+  const sceneId = Number(options?.sceneId || 0)
+  const subSceneId = Number(options?.subSceneId || 0)
+  if (!wordId.value || !subSceneId) {
     loadState.value = 'error'
     return
   }
   loadState.value = 'loading'
   try {
-    word.value = await getWordDetail(wordId.value)
+    // 子场景词序驱动完词后的自动下一词
+    const words = await getSubSceneWords(subSceneId)
+    await learnStore.beginSession(sceneId, subSceneId, words.map((w) => w.id), wordId.value)
+    await loadWord()
+  } catch {
+    loadState.value = 'error'
+  }
+})
+
+async function loadWord() {
+  const id = learnStore.currentWordId || wordId.value
+  if (!id) {
+    loadState.value = 'error'
+    return
+  }
+  wordId.value = id
+  loadState.value = 'loading'
+  try {
+    word.value = await getWordDetail(id)
     loadState.value = 'ready'
   } catch {
     loadState.value = 'error'
@@ -229,19 +257,37 @@ async function playSentence(filename: string) {
 }
 
 function jumpDimension(index: number) {
-  learnStore.currentDimension = index
+  learnStore.dimension = index
 }
 
 function prevDimension() {
   learnStore.prevDimension()
 }
 
-function nextDimension() {
-  if (learnStore.currentDimension < 5) {
-    learnStore.nextDimension()
-  } else {
-    // 完词流转与自动下一词属工单6（学习会话生命周期）
-    handleBackOrRetry()
+// 前进：1-4 维上报后进下一维；第 5 维完词（SM-2 记下次复习时间）
+// 并自动进入下一词；全部学完去学习小结
+async function handleNext() {
+  if (advancing.value) return
+  advancing.value = true
+  try {
+    const result = await learnStore.advance()
+    if (result === 'moved') {
+      if (learnStore.dimension === 1) {
+        // 完词进入新词：换词重载并停掉旧音频
+        stopAudio()
+        playingWord.value = false
+        playingSentence.value = ''
+        await loadWord()
+      }
+    } else {
+      // 子场景学完：结束会话，进入学习小结
+      await learnStore.endLearning()
+      uni.redirectTo({
+        url: `/pages/summary/index?subSceneId=${learnStore.subSceneId}`,
+      })
+    }
+  } finally {
+    advancing.value = false
   }
 }
 

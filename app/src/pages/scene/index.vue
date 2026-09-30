@@ -75,7 +75,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { onLoad, onShow } from '@dcloudio/uni-app'
 import { getScene, getSubSceneWords } from '@/api/scene'
 import { getLearningStatusMeta, type LearningStatusMeta } from '@/utils/learning-status'
 import type { Scene, WordListItem } from '@/types'
@@ -95,7 +95,11 @@ const sceneId = ref(0)
 
 onLoad((options) => {
   sceneId.value = Number(options?.id || 0)
-  loadAll()
+})
+
+// onShow 刷新：从学习页返回时词表状态可见变化（如 学习中 → 熟悉）
+onShow(() => {
+  if (sceneId.value) loadAll()
 })
 
 async function loadAll() {
