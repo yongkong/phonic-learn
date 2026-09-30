@@ -1,41 +1,46 @@
 // WordWorld Design Tokens - SCSS version
+// 主题：Claymorphism（黏土拟物风），规范见 design-system/wordworld/MASTER.md
+// 注意：小程序端远程字体需 wx.loadFontFace，未加载时回退系统字体
 
-// Brand Colors
-$primary: #4A90D9;
-$primary-light: #6BA5E7;
-$primary-dark: #3A7BC8;
-$secondary: #FF8C42;
-$secondary-light: #FFA96B;
-$secondary-dark: #E07530;
-$success: #5CB85C;
-$success-light: #7ACC7A;
-$warning: #FFD93D;
-$warning-light: #FFE56E;
-$error: #FF6B6B;
-$error-light: #FF8F8F;
+// Brand Colors — 学习蓝 + 活力琥珀 + 趣味粉
+$primary: #2563EB;
+$primary-light: #5B8DEF;
+$primary-dark: #1D4ED8;
+$secondary: #F59E0B;
+$secondary-light: #FBBF24;
+$secondary-dark: #D97706;
+$accent: #EC4899;
+$accent-light: #F472B6;
+$accent-dark: #DB2777;
+$success: #22C55E;
+$success-light: #4ADE80;
+$warning: #FACC15;
+$warning-light: #FDE047;
+$error: #DC2626;
+$error-light: #F87171;
 
-// Semantic Colors (letter annotation)
+// Semantic Colors — 自然拼读着色（教学功能色，语义不可随风格更改）
 $vowel: #FF6B6B;
-$consonant: #4A90D9;
+$consonant: #2563EB;
 $silent: #999999;
-$syllable-sep: #FF8C42;
+$syllable-sep: #F59E0B;
 
 // Surface Colors
-$bg: #F8F9FA;
+$bg: #EFF6FF;
 $surface: #FFFFFF;
-$surface-hover: #F0F4F8;
-$border: #E8ECF0;
-$border-light: #F0F2F5;
+$surface-hover: #F1F5FD;
+$border: #E4ECFC;
+$border-light: #EFF3FC;
 
 // Text Colors
-$fg: #2C3E50;
-$fg-secondary: #7F8C8D;
-$fg-tertiary: #B0BEC5;
+$fg: #0F172A;
+$fg-secondary: #475569;
+$fg-tertiary: #94A3B8;
 $fg-inverse: #FFFFFF;
 
 // Typography
-$font-display: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive;
-$font-body: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+$font-display: 'Baloo 2', 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', '楷体', 'KaiTi', cursive;
+$font-body: 'Comic Neue', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
 $font-mono: 'SF Mono', 'Menlo', monospace;
 
 // Spacing (8px scale, converted to rpx for uni-app)
@@ -63,7 +68,17 @@ $shadow-md: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
 $shadow-lg: 0 16rpx 48rpx rgba(0, 0, 0, 0.12);
 $shadow-xl: 0 24rpx 80rpx rgba(0, 0, 0, 0.15);
 
+// Claymorphism Effects — 黏土拟物核心特征
+$clay-border-width: 6rpx;
+$clay-shadow: inset 6rpx 6rpx 12rpx rgba(255, 255, 255, 0.85),
+              inset -6rpx -6rpx 16rpx rgba(148, 163, 184, 0.25),
+              0 16rpx 40rpx rgba(37, 99, 235, 0.12);
+$clay-shadow-sm: inset 4rpx 4rpx 8rpx rgba(255, 255, 255, 0.8),
+                 inset -4rpx -4rpx 10rpx rgba(148, 163, 184, 0.2),
+                 0 8rpx 20rpx rgba(37, 99, 235, 0.1);
+
 // Transitions
 $transition-fast: 150ms ease;
-$transition-normal: 250ms ease;
+$transition-normal: 200ms ease-out;
 $transition-slow: 400ms ease;
+$clay-press: 200ms ease-out;
