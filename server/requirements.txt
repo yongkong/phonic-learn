@@ -6,3 +6,7 @@ pydantic==2.9.2
 pydantic-settings==2.6.1
 alembic==1.14.0
 python-multipart==0.0.17
+
+# 测试依赖（TestClient 依赖 httpx）
+pytest==9.1.1
+httpx==0.28.1

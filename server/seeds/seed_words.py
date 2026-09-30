@@ -1,5 +1,6 @@
 """单词种子数据 - MVP 15个测试单词"""
 
+from app.models.scene import SubScene
 from app.models.word import Word, SceneWord
 
 
@@ -442,12 +443,19 @@ def seed_words(db):
         },
     ]
 
-    # 单词和子场景的映射
-    word_to_sub_scene = {
-        "apple": 1, "bread": 1, "milk": 1, "egg": 1, "rice": 1,  # 厨房
-        "book": 3, "pen": 3, "desk": 3, "teacher": 3, "classroom": 3,  # 教室
-        "orange": 5, "banana": 5, "grape": 5, "strawberry": 5, "peach": 5,  # 水果区
+    # 单词和子场景的映射：按子场景名称（域概念）关联，
+    # 不依赖自增 id 的插入顺序——顺序变化不会再导致映射静默错位
+    word_to_sub_scene_name = {
+        "apple": "厨房", "bread": "厨房", "milk": "厨房", "egg": "厨房", "rice": "厨房",
+        "book": "教室", "pen": "教室", "desk": "教室", "teacher": "教室", "classroom": "教室",
+        "orange": "水果区", "banana": "水果区", "grape": "水果区",
+        "strawberry": "水果区", "peach": "水果区",
     }
+
+    name_to_id = {ss.name: ss.id for ss in db.query(SubScene).all()}
+    missing = set(word_to_sub_scene_name.values()) - set(name_to_id)
+    if missing:
+        raise ValueError(f"种子引用了不存在的子场景: {sorted(missing)}")
 
     words_created = 0
     for word_data in words_data:
@@ -456,7 +464,7 @@ def seed_words(db):
         db.flush()
 
         # 创建场景-单词关联
-        sub_scene_id = word_to_sub_scene[word_data["spelling"]]
+        sub_scene_id = name_to_id[word_to_sub_scene_name[word_data["spelling"]]]
         scene_word = SceneWord(
             sub_scene_id=sub_scene_id,
             word_id=word.id,

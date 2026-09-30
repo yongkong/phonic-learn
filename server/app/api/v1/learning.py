@@ -12,6 +12,7 @@ from app.schemas.learning import (
     CompleteWordRequest,
     RecordPronunciationRequest,
     RecordSpellingRequest,
+    EndSessionRequest,
     LearningStatsResponse,
 )
 from app.api.deps import get_current_user
@@ -225,16 +226,15 @@ def record_spelling(
 
 @router.post("/end-session", summary="结束学习会话")
 def end_session(
-    session_id: int,
-    duration_seconds: int = 0,
+    request: EndSessionRequest,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """结束学习会话"""
+    """结束学习会话（参数以请求体接收，与前端契约一致）"""
     session = (
         db.query(LearningSession)
         .filter(
-            LearningSession.id == session_id,
+            LearningSession.id == request.session_id,
             LearningSession.user_id == user.id,
         )
         .first()
@@ -243,11 +243,11 @@ def end_session(
     if not session:
         raise HTTPException(status_code=404, detail="会话不存在")
 
-    session.duration_seconds = duration_seconds
+    session.duration_seconds = request.duration_seconds
     session.completed_at = datetime.utcnow()
     db.commit()
 
-    return {"message": "Session ended", "session_id": session_id}
+    return {"message": "Session ended", "session_id": request.session_id}
 
 
 @router.get("/stats", response_model=LearningStatsResponse, summary="获取学习统计")

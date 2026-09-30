@@ -34,6 +34,11 @@ class RecordSpellingRequest(BaseModel):
     correct: bool
 
 
+class EndSessionRequest(BaseModel):
+    session_id: int
+    duration_seconds: int = Field(0, ge=0, description="会话时长（秒）")
+
+
 class LearningStatsResponse(BaseModel):
     total_words: int = 0
     learned_words: int = 0
