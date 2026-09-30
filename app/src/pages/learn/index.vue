@@ -10,7 +10,7 @@
     </view>
     <view v-else-if="loadState === 'error'" class="learn-status">
       <text class="status-text">{{ wordId ? '加载失败了，请检查网络' : '缺少单词参数，请从词表进入' }}</text>
-      <button class="btn-back" @click="goBack">{{ wordId ? '重试' : '返回词表' }}</button>
+      <button class="btn-back" @click="handleBackOrRetry">{{ wordId ? '重试' : '返回词表' }}</button>
     </view>
 
     <template v-else>
@@ -21,11 +21,7 @@
           <text v-if="word?.phonetic_us" class="word-phonetic">{{ word.phonetic_us }}</text>
         </view>
         <button class="btn-audio" :class="{ playing: playingWord }" @click="playWord" aria-label="播放单词发音">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M11 5L6 9H2v6h4l5 4z" :fill="playingWord ? 'currentColor' : 'none'" />
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-          </svg>
+          <AudioIcon :filled="playingWord" :wave="2" class="audio-icon" />
         </button>
       </view>
 
@@ -90,11 +86,7 @@
             <text v-for="(p, i) in word?.phonic_analysis?.syllable_phonetics || []" :key="i" class="phonetic-chip">{{ p }}</text>
           </view>
           <button class="btn-listen-repeat" @click="playWord">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M11 5L6 9H2v6h4l5 4z" />
-              <path d="m17 8 4 4-4 4" />
-              <path d="M21 12H9" transform="translate(2 0) scale(-1 1) translate(-16 0)" />
-            </svg>
+            <AudioIcon :wave="1" class="listen-icon" />
             <text>听一听，跟着读</text>
           </button>
         </view>
@@ -124,10 +116,7 @@
               @click="playSentence(sent.audio_filename)"
               :aria-label="`播放例句 ${i + 1}`"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M11 5L6 9H2v6h4l5 4z" :fill="playingSentence === sent.audio_filename ? 'currentColor' : 'none'" />
-                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-              </svg>
+              <AudioIcon :filled="playingSentence === sent.audio_filename" :wave="1" class="sentence-audio-icon" />
             </button>
           </view>
         </view>
@@ -146,12 +135,16 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { storeToRefs } from 'pinia'
+import { onLoad, onUnload } from '@dcloudio/uni-app'
 import { getWordDetail } from '@/api/scene'
 import { DIMENSIONS } from '@/utils/dimensions'
 import { playWordAudio, playSentenceAudio } from '@/utils/audio'
 import { useLearnStore } from '@/stores/learn'
-import type { WordDetail, PhonicsLetterSound } from '@/types'
+import { stopAudio } from '@/utils/audio'
+import AudioIcon from '@/components/AudioIcon.vue'
+import { PHONIC_COLORS } from '@/utils/phonics-colors'
+import type { WordDetail } from '@/types'
 
 const learnStore = useLearnStore()
 const word = ref<WordDetail | null>(null)
@@ -159,7 +152,12 @@ const loadState = ref<'loading' | 'ready' | 'error'>('loading')
 const wordId = ref(0)
 const playingWord = ref(false)
 const playingSentence = ref('')
-const currentDimension = ref(1)
+// 维度状态以 learn store 为单源（工单6 会话流转在其上扩展）
+const { currentDimension } = storeToRefs(learnStore)
+
+onUnload(() => {
+  stopAudio()
+})
 
 onLoad((options) => {
   wordId.value = Number(options?.wordId || 0)
@@ -184,13 +182,6 @@ async function loadWord() {
 }
 
 // 形维字母着色：letter_sounds 的 color 是教学语义（红/蓝/灰/紫），不随风格更改
-const PHONIC_COLORS: Record<PhonicsLetterSound['color'], string> = {
-  red: '#FF6B6B',
-  blue: '#4F46E5',
-  gray: '#9CA3AF',
-  purple: '#8B5CF6',
-}
-
 const letterSegments = computed(() =>
   (word.value?.phonic_analysis?.letter_sounds || []).map((seg) => ({
     letter: seg.letter,
@@ -211,47 +202,50 @@ function tipTypeLabel(type: string): string {
 }
 
 async function playWord() {
-  if (!word.value?.audio_filename || playingWord.value) return
+  const filename = word.value?.audio_filename
+  if (!filename || playingWord.value) return
   playingWord.value = true
   try {
-    await playWordAudio(word.value.audio_filename)
+    await playWordAudio(filename)
   } catch {
     uni.showToast({ title: '音频播放失败', icon: 'none' })
   } finally {
-    playingWord.value = false
+    // 被新播放取消时不清除新播放的态
+    if (playingWord.value) playingWord.value = false
   }
 }
 
 async function playSentence(filename: string) {
-  if (playingSentence.value) return
+  if (playingSentence.value === filename) return
   playingSentence.value = filename
   try {
     await playSentenceAudio(filename)
   } catch {
     uni.showToast({ title: '音频播放失败', icon: 'none' })
   } finally {
-    playingSentence.value = ''
+    // 仅当仍是自己时清理，避免清掉新播放的态
+    if (playingSentence.value === filename) playingSentence.value = ''
   }
 }
 
 function jumpDimension(index: number) {
-  currentDimension.value = index
+  learnStore.currentDimension = index
 }
 
 function prevDimension() {
-  if (currentDimension.value > 1) currentDimension.value--
+  learnStore.prevDimension()
 }
 
 function nextDimension() {
-  if (currentDimension.value < 5) {
-    currentDimension.value++
+  if (learnStore.currentDimension < 5) {
+    learnStore.nextDimension()
   } else {
     // 完词流转与自动下一词属工单6（学习会话生命周期）
-    goBack()
+    handleBackOrRetry()
   }
 }
 
-function goBack() {
+function handleBackOrRetry() {
   if (!wordId.value) {
     uni.navigateBack()
   } else {
@@ -342,7 +336,7 @@ function goBack() {
   margin-left: $space-md;
   @include press-feedback($edge-primary-sm, none);
 
-  svg {
+  .audio-icon {
     width: 48rpx;
     height: 48rpx;
   }
@@ -397,7 +391,7 @@ function goBack() {
   font-family: $font-display;
   font-size: 24rpx;
   font-weight: 800;
-  color: $fg-tertiary;
+  color: $fg-secondary;
   line-height: 1;
 }
 
@@ -580,7 +574,7 @@ function goBack() {
   font-weight: 800;
   @include press-feedback($edge-accent-sm, none);
 
-  svg {
+  .listen-icon {
     width: 36rpx;
     height: 36rpx;
   }
@@ -679,7 +673,7 @@ function goBack() {
   flex-shrink: 0;
   @include press-feedback($edge-primary-sm, none);
 
-  svg {
+  .sentence-audio-icon {
     width: 40rpx;
     height: 40rpx;
   }
