@@ -2,12 +2,13 @@
   "name": "wordworld-app",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev:h5": "uni",
     "build:h5": "uni build",
     "dev:mp-weixin": "uni -p mp-weixin",
-    "build:mp-weixin": "uni build -p mp-weixin"
+    "build:mp-weixin": "uni build -p mp-weixin",
+    "test": "vitest run",
+    "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-4060620250520001",
@@ -27,6 +28,8 @@
     "@dcloudio/vite-plugin-uni": "3.0.0-4060620250520001",
     "sass": "^1.77.0",
     "typescript": "^5.4.5",
-    "vite": "^5.2.8"
+    "vite": "^5.2.8",
+    "vitest": "^2.1.9",
+    "vue-tsc": "^3.3.11"
   }
 }

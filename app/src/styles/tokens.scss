@@ -1,84 +1,86 @@
 // WordWorld Design Tokens - SCSS version
-// 主题：Claymorphism（黏土拟物风），规范见 design-system/wordworld/MASTER.md
+// 主题：Confident Play（自信游戏风，面向 7+ 学童），规范见 design-system/wordworld/MASTER.md v2
+// v2 修订：v1 黏土拟物（Claymorphism）已废弃，立体感来自按钮底边（hard edge）+ 柔和外投影
 // 注意：小程序端远程字体需 wx.loadFontFace，未加载时回退系统字体
 
-// Brand Colors — 学习蓝 + 活力琥珀 + 趣味粉
-$primary: #2563EB;
-$primary-light: #5B8DEF;
-$primary-dark: #1D4ED8;
-$secondary: #F59E0B;
-$secondary-light: #FBBF24;
-$secondary-dark: #D97706;
-$accent: #EC4899;
-$accent-light: #F472B6;
-$accent-dark: #DB2777;
-$success: #22C55E;
+// Brand Colors — 自信靛蓝 + 活力橙：饱和、自信、大孩子的游戏感
+$primary: #4F46E5;
+$primary-light: #6366F1;
+$primary-dark: #4338CA;
+$primary-soft: #EEF2FF;
+$secondary: #F97316;
+$secondary-light: #FB923C;
+$secondary-dark: #C2410C;
+$accent: #F97316;
+$accent-light: #FB923C;
+$accent-dark: #C2410C;
+$accent-soft: #FFF3E8;
+$success: #10B981;
 $success-light: #4ADE80;
-$warning: #FACC15;
+$warning: #F59E0B;
 $warning-light: #FDE047;
 $error: #DC2626;
 $error-light: #F87171;
 
 // Semantic Colors — 自然拼读着色（教学功能色，语义不可随风格更改）
 $vowel: #FF6B6B;
-$consonant: #2563EB;
-$silent: #999999;
+$consonant: #4F46E5;
+$silent: #9CA3AF;
 $syllable-sep: #F59E0B;
 
 // Surface Colors
-$bg: #EFF6FF;
+$bg: #EEF2FF;
 $surface: #FFFFFF;
-$surface-hover: #F1F5FD;
-$border: #E4ECFC;
+$surface-alt: #F7F8FE;
+$surface-hover: #F7F8FE;
+$border: #E2E5F5;
+$border-strong: #C9CDF0;
 $border-light: #EFF3FC;
 
 // Text Colors
-$fg: #0F172A;
-$fg-secondary: #475569;
-$fg-tertiary: #94A3B8;
+$fg: #1E1B4B;
+$fg-secondary: #4E4B77;
+$fg-tertiary: #767397;
 $fg-inverse: #FFFFFF;
 
 // Typography
-$font-display: 'Baloo 2', 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', '楷体', 'KaiTi', cursive;
-$font-body: 'Comic Neue', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+// 不使用 Comic Neue / Comic Sans（低龄感，v2 反模式）
+$font-display: 'Baloo 2', 'Nunito', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+$font-body: 'Nunito', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
 $font-mono: 'SF Mono', 'Menlo', monospace;
 
 // Spacing (8px scale, converted to rpx for uni-app)
-$space-xs: 8rpx;
-$space-sm: 16rpx;
-$space-md: 24rpx;
-$space-lg: 32rpx;
-$space-xl: 40rpx;
-$space-2xl: 48rpx;
-$space-3xl: 64rpx;
-$space-4xl: 80rpx;
-$space-5xl: 96rpx;
+$space-xs: 8rpx;   // 4px
+$space-sm: 16rpx;  // 8px
+$space-md: 24rpx;  // 12px
+$space-lg: 32rpx;  // 16px
+$space-xl: 40rpx;  // 20px
+$space-2xl: 48rpx; // 24px
+$space-3xl: 64rpx; // 32px
+$space-4xl: 80rpx; // 40px
+$space-5xl: 96rpx; // 48px
 
 // Border Radius
-$radius-sm: 16rpx;
-$radius-md: 24rpx;
-$radius-lg: 32rpx;
-$radius-xl: 48rpx;
+$radius-sm: 20rpx;  // 10px
+$radius-md: 28rpx;  // 14px
+$radius-lg: 36rpx;  // 18px
+$radius-xl: 48rpx;  // 24px
 $radius-pill: 999rpx;
 $radius-circle: 50%;
 
-// Shadows
-$shadow-sm: 0 2rpx 6rpx rgba(0, 0, 0, 0.06);
-$shadow-md: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
-$shadow-lg: 0 16rpx 48rpx rgba(0, 0, 0, 0.12);
-$shadow-xl: 0 24rpx 80rpx rgba(0, 0, 0, 0.15);
+// Shadows — 靛黑色调柔和投影（干净立体感）
+$shadow-sm: 0 2rpx 4rpx rgba(30, 27, 75, 0.05), 0 4rpx 16rpx rgba(30, 27, 75, 0.06);
+$shadow-md: 0 8rpx 32rpx rgba(30, 27, 75, 0.1);
+$shadow-lg: 0 24rpx 64rpx rgba(30, 27, 75, 0.16);
+$shadow-xl: 0 24rpx 64rpx rgba(30, 27, 75, 0.16);
 
-// Claymorphism Effects — 黏土拟物核心特征
-$clay-border-width: 6rpx;
-$clay-shadow: inset 6rpx 6rpx 12rpx rgba(255, 255, 255, 0.85),
-              inset -6rpx -6rpx 16rpx rgba(148, 163, 184, 0.25),
-              0 16rpx 40rpx rgba(37, 99, 235, 0.12);
-$clay-shadow-sm: inset 4rpx 4rpx 8rpx rgba(255, 255, 255, 0.8),
-                 inset -4rpx -4rpx 10rpx rgba(148, 163, 184, 0.2),
-                 0 8rpx 20rpx rgba(37, 99, 235, 0.1);
+// 游戏实体按钮的"底边"立体感（按压时下沉：translateY(4rpx) + 底边变薄）
+$edge-primary: 0 6rpx 0 0 $primary-dark;
+$edge-primary-sm: 0 4rpx 0 0 $primary-dark;
+$edge-accent: 0 6rpx 0 0 $accent-dark;
+$edge-accent-sm: 0 4rpx 0 0 $accent-dark;
 
 // Transitions
 $transition-fast: 150ms ease;
 $transition-normal: 200ms ease-out;
 $transition-slow: 400ms ease;
-$clay-press: 200ms ease-out;

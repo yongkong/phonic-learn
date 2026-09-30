@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { User } from '@/types'
+import { uniStorage } from '@/utils/uni-storage'
 
 export const useUserStore = defineStore('user', {
   state: (): { user: User | null; isOnboarded: boolean } => ({
@@ -22,5 +23,6 @@ export const useUserStore = defineStore('user', {
       this.isOnboarded = false
     },
   },
-  persist: true,
+  // key 固定为 'user'：请求层从 uni.getStorageSync('user') 读取 token
+  persist: { key: 'user', storage: uniStorage },
 })

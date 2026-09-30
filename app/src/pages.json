@@ -64,16 +64,16 @@
     }
   ],
   "globalStyle": {
-    "navigationBarTextStyle": "black",
+    "navigationBarTextStyle": "white",
     "navigationBarTitleText": "WordWorld",
-    "navigationBarBackgroundColor": "#4A90D9",
-    "backgroundColor": "#F8F9FA"
+    "navigationBarBackgroundColor": "#4F46E5",
+    "backgroundColor": "#EEF2FF"
   },
   "tabBar": {
-    "color": "#7F8C8D",
-    "selectedColor": "#4A90D9",
+    "color": "#767397",
+    "selectedColor": "#4F46E5",
     "backgroundColor": "#FFFFFF",
-    "borderStyle": "black",
+    "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/home/index",

@@ -6,9 +6,12 @@ export interface ApiResponse<T = any> {
   data: T
 }
 
+/** request() 的 url 由第一个参数提供，只需 method/data/header */
+export type RequestOptions = Pick<UniApp.RequestOptions, 'method' | 'data' | 'header'>
+
 export function request<T = any>(
   url: string,
-  options: UniApp.RequestOptions = {}
+  options: RequestOptions = {}
 ): Promise<T> {
   return new Promise((resolve, reject) => {
     // Get token from storage

@@ -14,16 +14,23 @@
 
 <script setup lang="ts">
 import { onShow } from '@dcloudio/uni-app'
+import { ref } from 'vue'
+import { useUserStore } from '@/stores/user'
+import { resolveSplashDestination } from '@/utils/splash-route'
+
+const userStore = useUserStore()
+const navigated = ref(false)
 
 onShow(() => {
-  // 3秒后根据用户状态跳转
+  navigated.value = false
   setTimeout(() => {
-    // TODO: 接入 userStore 检查用户是否已注册
-    const isRegistered = false // userStore.isLoggedIn
-    if (isRegistered) {
-      uni.switchTab({ url: '/pages/home/index' })
+    if (navigated.value) return
+    navigated.value = true
+    const dest = resolveSplashDestination(userStore.isLoggedIn)
+    if (dest.isTab) {
+      uni.switchTab({ url: dest.url })
     } else {
-      uni.navigateTo({ url: '/pages/onboarding/index' })
+      uni.navigateTo({ url: dest.url })
     }
   }, 3000)
 })
