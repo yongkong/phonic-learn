@@ -6,7 +6,13 @@ from pathlib import Path
 # 添加项目根目录到 Python 路径
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.database import SessionLocal
+from app.database import SessionLocal, Base, engine
+
+# 建表逻辑在 app.main 导入时执行；单独运行种子脚本时需要先自行建表，
+# 否则全新的开发库会因表不存在而失败
+from app.models import user, scene, word, learning_record  # noqa: F401
+Base.metadata.create_all(bind=engine)
+
 from seeds.seed_scenes import seed_scenes
 from seeds.seed_words import seed_words
 
