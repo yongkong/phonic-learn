@@ -9,445 +9,528 @@
   .profile-screen {
     min-height: 100%;
     background: var(--bg);
-    padding-bottom: 90px;
+    padding-bottom: 100px;
   }
-  .profile-header {
-    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
-    padding: 0 var(--space-xl) var(--space-xl);
-    padding-top: 8px;
-    color: white;
-    text-align: center;
-  }
-  .profile-topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-sm) 0;
-    margin-bottom: var(--space-lg);
-  }
-  .profile-topbar-title {
-    font-size: 17px;
-    font-weight: 700;
-  }
-  .profile-topbar-btn {
-    font-size: 20px;
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .profile-avatar-section {
-    padding: var(--space-lg) 0;
-  }
-  .profile-avatar-large {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 48px;
-    margin: 0 auto var(--space-md);
-    border: 3px solid rgba(255,255,255,0.5);
-  }
-  .profile-name {
-    font-family: var(--font-display);
-    font-size: 26px;
-    font-weight: bold;
-    margin-bottom: var(--space-xs);
-  }
-  .profile-level {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(255,255,255,0.2);
-    padding: 4px 14px;
-    border-radius: var(--radius-pill);
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: var(--space-md);
-  }
-  .profile-xp-bar {
-    background: rgba(255,255,255,0.2);
-    border-radius: var(--radius-pill);
-    height: 8px;
-    overflow: hidden;
-    max-width: 200px;
-    margin: 0 auto;
-  }
-  .profile-xp-fill {
-    height: 100%;
-    width: 75%;
-    background: var(--warning);
-    border-radius: var(--radius-pill);
-  }
-  .profile-xp-text {
-    font-size: 12px;
-    opacity: 0.8;
-    margin-top: 4px;
-  }
-  /* Stats Row */
-  .profile-stats {
-    display: flex;
-    gap: var(--space-sm);
-    padding: 0 var(--space-xl);
-    margin-top: var(--space-lg);
-  }
-  .profile-stat {
-    flex: 1;
-    background: var(--surface);
-    border-radius: var(--radius-md);
-    padding: var(--space-md);
-    text-align: center;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-light);
-  }
-  .profile-stat-value {
-    font-family: var(--font-display);
-    font-size: 28px;
-    font-weight: bold;
-    color: var(--primary);
-  }
-  .profile-stat-label {
-    font-size: 12px;
-    color: var(--fg-secondary);
-    margin-top: 2px;
-  }
-  /* Chart Section */
-  .profile-chart {
-    margin: var(--space-lg) var(--space-xl);
-    background: var(--surface);
-    border-radius: var(--radius-lg);
-    padding: var(--space-lg);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-light);
-  }
-  .profile-chart-title {
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: var(--space-md);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .profile-chart-bars {
-    display: flex;
-    align-items: flex-end;
-    gap: 6px;
-    height: 80px;
-    margin-bottom: var(--space-sm);
-  }
-  .chart-bar {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-  .chart-bar-fill {
-    width: 100%;
-    border-radius: 4px 4px 0 0;
-    background: var(--primary);
-    min-height: 4px;
-    transition: height 0.5s ease;
-  }
-  .chart-bar-fill.low { background: var(--fg-tertiary); }
-  .chart-bar-fill.high { background: var(--success); }
-  .chart-bar-label {
-    font-size: 11px;
-    color: var(--fg-tertiary);
-  }
-  .chart-bar-value {
-    font-size: 10px;
-    color: var(--fg-secondary);
-    font-weight: 600;
-  }
-  /* Menu List */
-  .profile-menu {
-    margin: 0 var(--space-xl);
-  }
-  .profile-menu-item {
+
+  .profile-head {
     display: flex;
     align-items: center;
     gap: var(--space-md);
-    padding: var(--space-lg) 0;
-    border-bottom: 1px solid var(--border-light);
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
+    padding: var(--space-lg) var(--space-xl) 0;
   }
-  .profile-menu-item:last-child { border-bottom: none; }
-  .profile-menu-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-  }
-  .profile-menu-icon.blue { background: rgba(74, 144, 217, 0.1); }
-  .profile-menu-icon.red { background: rgba(255, 107, 107, 0.1); }
-  .profile-menu-icon.green { background: rgba(92, 184, 92, 0.1); }
-  .profile-menu-icon.orange { background: rgba(255, 140, 66, 0.1); }
-  .profile-menu-icon.purple { background: rgba(155, 89, 182, 0.1); }
-  .profile-menu-icon.gold { background: rgba(255, 217, 61, 0.2); }
-  .profile-menu-info { flex: 1; }
-  .profile-menu-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--fg);
-  }
-  .profile-menu-subtitle {
-    font-size: 13px;
-    color: var(--fg-secondary);
-    margin-top: 1px;
-  }
-  .profile-menu-badge {
-    font-size: 13px;
-    color: var(--fg-tertiary);
-    font-weight: 600;
-  }
-  .profile-menu-arrow {
-    font-size: 16px;
-    color: var(--fg-tertiary);
-  }
-  /* Settings */
-  .profile-settings {
-    margin: var(--space-lg) var(--space-xl) 0;
-    background: var(--surface);
+  .big-avatar {
+    width: 64px; height: 64px;
     border-radius: var(--radius-lg);
-    padding: var(--space-lg);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-light);
+    background: #D6DEFF;
+    color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid #fff;
+    box-shadow: var(--shadow-md);
+    flex-shrink: 0;
   }
-  .profile-settings-title {
-    font-size: 16px;
+  .profile-name {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+  }
+  .profile-sub {
+    font-size: 13px;
     font-weight: 700;
-    margin-bottom: var(--space-md);
+    color: var(--fg-secondary);
+    margin-top: 2px;
     display: flex;
     align-items: center;
     gap: 6px;
   }
-  .settings-row {
-    display: flex;
-    justify-content: space-between;
+  .profile-sub .streak {
+    display: inline-flex;
     align-items: center;
-    padding: var(--space-md) 0;
-    border-bottom: 1px solid var(--border-light);
+    gap: 3px;
+    color: var(--accent-dark);
   }
-  .settings-row:last-child { border-bottom: none; }
-  .settings-label {
-    font-size: 15px;
-    color: var(--fg);
-  }
-  .settings-value {
-    font-size: 15px;
+  .edit-btn {
+    margin-left: auto;
+    border: none;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
     color: var(--fg-secondary);
-    font-weight: 500;
-  }
-  /* Toggle Switch */
-  .toggle-switch {
-    width: 50px;
-    height: 30px;
-    border-radius: 15px;
-    background: var(--border);
-    position: relative;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 800;
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
     cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
     transition: var(--transition-fast);
   }
-  .toggle-switch.active { background: var(--success); }
-  .toggle-switch::after {
+  .edit-btn:active { transform: scale(0.94); }
+
+  /* 等级卡 */
+  .level-card {
+    margin: var(--space-lg) var(--space-xl) 0;
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
+  }
+  .level-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+  }
+  .level-name {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .level-xp {
+    font-size: 13px;
+    font-weight: 800;
+    font-family: var(--font-display);
+    opacity: 0.9;
+  }
+  .level-card .progress-bar { background: rgba(255,255,255,0.25); height: 12px; }
+  .level-card .progress-fill { background: #fff; }
+  .level-foot {
+    margin-top: var(--space-sm);
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.85;
+  }
+
+  /* 数据统计 */
+  .stats-row { margin: var(--space-lg) var(--space-xl) 0; }
+  .stat-card .stat-value { color: var(--fg); }
+  .stat-card.s1 .stat-value { color: var(--primary); }
+  .stat-card.s2 .stat-value { color: var(--accent-dark); }
+  .stat-card.s3 .stat-value { color: var(--success-dark); }
+
+  .section {
+    margin: var(--space-lg) var(--space-xl) 0;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: var(--space-md);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title .more {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--primary);
+    cursor: pointer;
+    font-family: var(--font-body);
+    background: none;
+    border: none;
+  }
+
+  /* 复习提醒 */
+  .review-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md) var(--space-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  .review-icon {
+    width: 44px; height: 44px;
+    border-radius: var(--radius-sm);
+    background: var(--warning-soft);
+    color: #B45309;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .review-body { flex: 1; }
+  .review-title { font-size: 15px; font-weight: 800; }
+  .review-desc { font-size: 12px; font-weight: 600; color: var(--fg-secondary); margin-top: 1px; }
+  .review-go {
+    border: none;
+    background: var(--warning-soft);
+    color: #B45309;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 800;
+    padding: 9px 16px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: var(--transition-fast);
+  }
+  .review-go:active { transform: scale(0.94); }
+
+  /* 错词本 */
+  .mistake-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md) var(--space-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  .mistake-icon {
+    width: 44px; height: 44px;
+    border-radius: var(--radius-sm);
+    background: var(--error-soft);
+    color: var(--error);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .mistake-words { display: flex; gap: 6px; margin-top: 5px; }
+  .mistake-words .w {
+    font-size: 11px;
+    font-weight: 800;
+    font-family: var(--font-display);
+    color: var(--fg-secondary);
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    padding: 2px 10px;
+    border-radius: var(--radius-pill);
+  }
+
+  /* 勋章墙 */
+  .medal-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-md);
+  }
+  .medal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md) var(--space-xs);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    box-shadow: var(--shadow-sm);
+  }
+  .medal .m-icon {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+  .medal.locked .m-icon { background: #E3E5F3 !important; color: var(--fg-tertiary); }
+  .medal .m-name { font-size: 11px; font-weight: 800; color: var(--fg-secondary); text-align: center; }
+  .medal.locked .m-name { color: var(--fg-tertiary); }
+  .medal .m-icon.g1 { background: linear-gradient(135deg, #FB923C, var(--accent)); }
+  .medal .m-icon.g2 { background: linear-gradient(135deg, #818CF8, var(--primary)); }
+  .medal .m-icon.g3 { background: linear-gradient(135deg, #34D399, var(--success)); }
+  .medal .m-icon.g4 { background: linear-gradient(135deg, #FBBF24, #D97706); }
+
+  /* 设置 */
+  .setting-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md) var(--space-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  .setting-row + .setting-row { margin-top: var(--space-md); }
+  .setting-icon {
+    width: 36px; height: 36px;
+    border-radius: var(--radius-sm);
+    background: var(--primary-soft);
+    color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .setting-body { flex: 1; }
+  .setting-name { font-size: 15px; font-weight: 800; }
+  .setting-desc { font-size: 12px; font-weight: 600; color: var(--fg-tertiary); margin-top: 1px; }
+
+  /* 开关 */
+  .toggle {
+    position: relative;
+    width: 52px; height: 32px;
+    border-radius: var(--radius-pill);
+    background: var(--border-strong);
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    flex-shrink: 0;
+  }
+  .toggle::after {
     content: '';
     position: absolute;
-    width: 26px;
-    height: 26px;
+    top: 3px; left: 3px;
+    width: 26px; height: 26px;
     border-radius: 50%;
-    background: white;
-    top: 2px;
-    left: 2px;
+    background: #fff;
     box-shadow: var(--shadow-sm);
+    transition: var(--transition-normal);
+  }
+  .toggle.on { background: var(--success); }
+  .toggle.on::after { transform: translateX(20px); }
+
+  .goal-stepper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .step-btn {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary-soft);
+    color: var(--primary);
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
     transition: var(--transition-fast);
   }
-  .toggle-switch.active::after {
-    left: 22px;
+  .step-btn:active { transform: scale(0.88); }
+  .goal-val {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 800;
+    min-width: 52px;
+    text-align: center;
   }
 </style>
 </head>
 <body>
 <div class="screen">
-  <div class="dynamic-island"></div>
-  <div class="status-bar light">
+  <div class="status-bar dark">
     <span class="status-time">9:41</span>
-    <span class="status-icons">
-      <svg width="16" height="12" viewBox="0 0 16 12"><rect x="0" y="6" width="3" height="6" rx="0.5" fill="currentColor" opacity="0.3"/><rect x="4.5" y="4" width="3" height="8" rx="0.5" fill="currentColor" opacity="0.5"/><rect x="9" y="2" width="3" height="10" rx="0.5" fill="currentColor" opacity="0.7"/><rect x="13" y="0" width="3" height="12" rx="0.5" fill="currentColor"/></svg>
-      <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 3.6C10.2 3.6 12.2 4.6 13.5 6.2L15 4.5C13.3 2.5 10.8 1.2 8 1.2S2.7 2.5 1 4.5L2.5 6.2C3.8 4.6 5.8 3.6 8 3.6z" fill="currentColor" opacity="0.3"/><path d="M8 7c1.3 0 2.5.6 3.3 1.5L12.5 9.8C11.4 8.5 9.8 7.7 8 7.7s-3.4.8-4.5 2.1l1.2-1.3C5.5 7.6 6.7 7 8 7z" fill="currentColor" opacity="0.6"/><circle cx="8" cy="10.8" r="1.2" fill="currentColor"/></svg>
-      <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2" stroke="currentColor" stroke-width="1" fill="none"/><rect x="22" y="4" width="2.5" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="currentColor"/></svg>
-    </span>
+    <div class="status-icons">
+      <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 4.5a9 9 0 0 1 12 0"/><path d="M4.5 7a5.5 5.5 0 0 1 7 0"/><circle cx="8" cy="9.8" r="1.2" fill="currentColor" stroke="none"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="currentColor" fill="none" opacity="0.4"/><rect x="2" y="2" width="18" height="8" rx="1.8" fill="currentColor"/><path d="M23.5 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity="0.4"/></svg>
+    </div>
   </div>
 
   <div class="screen-content">
     <div class="profile-screen">
-      <!-- Header -->
-      <div class="profile-header">
-        <div class="profile-topbar">
-          <span></span>
-          <span class="profile-topbar-title">我的</span>
-          <button class="profile-topbar-btn">⚙️</button>
+      <div class="profile-head">
+        <div class="big-avatar">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
         </div>
-        <div class="profile-avatar-section">
-          <div class="profile-avatar-large">🧒</div>
+        <div>
           <div class="profile-name">小明</div>
-          <div class="profile-level">Lv.5 单词小达人</div>
-          <div class="profile-xp-bar">
-            <div class="profile-xp-fill"></div>
+          <div class="profile-sub">
+            三年级 · 探险 45 天
+            <span class="streak">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><path d="M12 2c1 4-4 6-4 10a4 4 0 0 0 8 0c0-1.5-.5-2.5-1-3.5 2.5 1 4 3.5 4 6a7 7 0 1 1-14 0c0-6 6-8 7-12.5z"/></svg>
+              连续 7 天
+            </span>
           </div>
-          <div class="profile-xp-text">距 Lv.6 还需 80 经验</div>
+        </div>
+        <button class="edit-btn">编辑</button>
+      </div>
+
+      <div class="level-card">
+        <div class="level-row">
+          <span class="level-name">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/></svg>
+            Lv.3 词汇探险家
+          </span>
+          <span class="level-xp">240 / 400 XP</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width: 60%"></div></div>
+        <div class="level-foot">再获得 160 XP 升到 Lv.4 场景大师</div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card s1">
+          <div class="stat-value">48</div>
+          <div class="stat-label">已学单词</div>
+        </div>
+        <div class="stat-card s2">
+          <div class="stat-value">7</div>
+          <div class="stat-label">连续天数</div>
+        </div>
+        <div class="stat-card s3">
+          <div class="stat-value">86%</div>
+          <div class="stat-label">练习正确率</div>
         </div>
       </div>
 
-      <!-- Stats -->
-      <div class="profile-stats">
-        <div class="profile-stat">
-          <div class="profile-stat-value">286</div>
-          <div class="profile-stat-label">已学词</div>
+      <div class="section">
+        <div class="section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          今日复习
         </div>
-        <div class="profile-stat">
-          <div class="profile-stat-value">198</div>
-          <div class="profile-stat-label">掌握词</div>
-        </div>
-        <div class="profile-stat">
-          <div class="profile-stat-value">88</div>
-          <div class="profile-stat-label">待复习</div>
+        <div class="review-card">
+          <div class="review-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+          </div>
+          <div class="review-body">
+            <div class="review-title">8 个单词到复习时间了</div>
+            <div class="review-desc">按艾宾浩斯曲线安排，今天复习记得最牢</div>
+          </div>
+          <button class="review-go">去复习</button>
         </div>
       </div>
 
-      <!-- Weekly Chart -->
-      <div class="profile-chart">
-        <div class="profile-chart-title">📈 本周学习</div>
-        <div class="profile-chart-bars">
-          <div class="chart-bar">
-            <div class="chart-bar-value">15</div>
-            <div class="chart-bar-fill" style="height:60%;"></div>
-            <div class="chart-bar-label">一</div>
+      <div class="section">
+        <div class="section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--error)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5A4.5 4.5 0 0 0 2 9c0 6 10 13 10 13s10-7 10-13a4.5 4.5 0 0 0-10-2.5z"/></svg>
+          错词本
+          <button class="more">全部 12 个 ›</button>
+        </div>
+        <div class="mistake-card">
+          <div class="mistake-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
           </div>
-          <div class="chart-bar">
-            <div class="chart-bar-value">20</div>
-            <div class="chart-bar-fill high" style="height:80%;"></div>
-            <div class="chart-bar-label">二</div>
-          </div>
-          <div class="chart-bar">
-            <div class="chart-bar-value">12</div>
-            <div class="chart-bar-fill" style="height:48%;"></div>
-            <div class="chart-bar-label">三</div>
-          </div>
-          <div class="chart-bar">
-            <div class="chart-bar-value">18</div>
-            <div class="chart-bar-fill" style="height:72%;"></div>
-            <div class="chart-bar-label">四</div>
-          </div>
-          <div class="chart-bar">
-            <div class="chart-bar-value">20</div>
-            <div class="chart-bar-fill high" style="height:80%;"></div>
-            <div class="chart-bar-label">五</div>
-          </div>
-          <div class="chart-bar">
-            <div class="chart-bar-value">8</div>
-            <div class="chart-bar-fill low" style="height:32%;"></div>
-            <div class="chart-bar-label">六</div>
-          </div>
-          <div class="chart-bar">
-            <div class="chart-bar-fill low" style="height:4px;"></div>
-            <div class="chart-bar-label">日</div>
+          <div class="review-body">
+            <div class="review-title">12 个单词需要加强</div>
+            <div class="mistake-words">
+              <span class="w">Wednesday</span>
+              <span class="w">vegetable</span>
+              <span class="w">beautiful</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Menu Items -->
-      <div class="profile-menu">
-        <div class="profile-menu-item">
-          <div class="profile-menu-icon red">📕</div>
-          <div class="profile-menu-info">
-            <div class="profile-menu-title">错词本</div>
-            <div class="profile-menu-subtitle">自动收录做错的单词</div>
-          </div>
-          <span class="profile-menu-badge">88</span>
-          <span class="profile-menu-arrow">›</span>
+      <div class="section">
+        <div class="section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.5 13l1.5 8-5-3-5 3 1.5-8"/></svg>
+          勋章墙
+          <span class="more" style="color: var(--fg-tertiary)">6 / 16</span>
         </div>
-        <div class="profile-menu-item">
-          <div class="profile-menu-icon green">🔁</div>
-          <div class="profile-menu-info">
-            <div class="profile-menu-title">艾宾浩斯复习提醒</div>
-            <div class="profile-menu-subtitle">今日待复习: 12词</div>
+        <div class="medal-grid">
+          <div class="medal">
+            <div class="m-icon g1"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 4-4 6-4 10a4 4 0 0 0 8 0c0-1.5-.5-2.5-1-3.5 2.5 1 4 3.5 4 6a7 7 0 1 1-14 0c0-6 6-8 7-12.5z"/></svg></div>
+            <div class="m-name">七日坚持</div>
           </div>
-          <span class="profile-menu-arrow">›</span>
-        </div>
-        <div class="profile-menu-item">
-          <div class="profile-menu-icon gold">🏆</div>
-          <div class="profile-menu-info">
-            <div class="profile-menu-title">勋章墙</div>
-            <div class="profile-menu-subtitle">🍎水果达人 🏫校园通 🔥连续7天</div>
+          <div class="medal">
+            <div class="m-icon g2"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/></svg></div>
+            <div class="m-name">首闯超市</div>
           </div>
-          <span class="profile-menu-badge">12</span>
-          <span class="profile-menu-arrow">›</span>
-        </div>
-        <div class="profile-menu-item">
-          <div class="profile-menu-icon purple">📖</div>
-          <div class="profile-menu-info">
-            <div class="profile-menu-title">我的作文集</div>
-            <div class="profile-menu-subtitle">记录每次写作进步</div>
+          <div class="medal">
+            <div class="m-icon g3"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div class="m-name">百发百中</div>
           </div>
-          <span class="profile-menu-badge">5</span>
-          <span class="profile-menu-arrow">›</span>
+          <div class="medal">
+            <div class="m-icon g4"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"/></svg></div>
+            <div class="m-name">金币富翁</div>
+          </div>
+          <div class="medal locked">
+            <div class="m-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <div class="m-name">满级单词王</div>
+          </div>
+          <div class="medal locked">
+            <div class="m-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <div class="m-name">全科通关</div>
+          </div>
+          <div class="medal locked">
+            <div class="m-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <div class="m-name">夜猫克星</div>
+          </div>
+          <div class="medal locked">
+            <div class="m-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <div class="m-name">神秘勋章</div>
+          </div>
         </div>
       </div>
 
-      <!-- Settings -->
-      <div class="profile-settings">
-        <div class="profile-settings-title">⚙️ 学习设置</div>
-        <div class="settings-row">
-          <span class="settings-label">每日学习量</span>
-          <span class="settings-value">20词</span>
+      <div class="section">
+        <div class="section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--fg-secondary)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          学习设置
         </div>
-        <div class="settings-row">
-          <span class="settings-label">学习提醒</span>
-          <span class="settings-value">16:00</span>
+        <div class="setting-row">
+          <div class="setting-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/></svg>
+          </div>
+          <div class="setting-body">
+            <div class="setting-name">每日目标</div>
+            <div class="setting-desc">每天掌握的单词数量</div>
+          </div>
+          <div class="goal-stepper">
+            <button class="step-btn" aria-label="减少">−</button>
+            <span class="goal-val">20 词</span>
+            <button class="step-btn" aria-label="增加">+</button>
+          </div>
         </div>
-        <div class="settings-row">
-          <span class="settings-label">音效</span>
-          <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+        <div class="setting-row">
+          <div class="setting-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+          </div>
+          <div class="setting-body">
+            <div class="setting-name">发音音效</div>
+            <div class="setting-desc">按钮提示音与朗读</div>
+          </div>
+          <button class="toggle on" role="switch" aria-checked="true" aria-label="发音音效"></button>
         </div>
-        <div class="settings-row">
-          <span class="settings-label">家长模式</span>
-          <span class="profile-menu-arrow">›</span>
+        <div class="setting-row">
+          <div class="setting-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          </div>
+          <div class="setting-body">
+            <div class="setting-name">学习提醒</div>
+            <div class="setting-desc">每天 19:00 提醒复习</div>
+          </div>
+          <button class="toggle" role="switch" aria-checked="false" aria-label="学习提醒"></button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Tab Bar -->
   <div class="tab-bar">
     <button class="tab-item">
-      <span class="tab-icon">📖</span>
-      <span class="tab-label">学习</span>
+      <span class="tab-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+      </span>
+      <span class="tab-label">首页</span>
     </button>
     <button class="tab-item">
-      <span class="tab-icon">🎮</span>
+      <span class="tab-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      </span>
       <span class="tab-label">练习</span>
     </button>
     <button class="tab-item">
-      <span class="tab-icon">✏️</span>
-      <span class="tab-label">作文</span>
+      <span class="tab-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5A4.5 4.5 0 0 0 2 9c0 6 10 13 10 13s10-7 10-13a4.5 4.5 0 0 0-10-2.5z"/></svg>
+      </span>
+      <span class="tab-label">复习</span>
     </button>
     <button class="tab-item active">
-      <span class="tab-icon">👤</span>
+      <span class="tab-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </span>
       <span class="tab-label">我的</span>
     </button>
   </div>
-
   <div class="home-indicator"></div>
 </div>
+
+<script>
+  document.querySelectorAll('.toggle').forEach(t => {
+    t.addEventListener('click', () => {
+      t.classList.toggle('on');
+      t.setAttribute('aria-checked', t.classList.contains('on'));
+    });
+  });
+  const goal = document.querySelector('.goal-val');
+  let n = 20;
+  document.querySelectorAll('.step-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      n = Math.min(60, Math.max(10, n + (b.textContent.trim() === '+' ? 5 : -5)));
+      goal.textContent = n + ' 词';
+    });
+  });
+</script>
 </body>
 </html>

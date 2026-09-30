@@ -3,369 +3,354 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WordWorld - 情景练习</title>
+<title>WordWorld - 超市大冒险</title>
 <link rel="stylesheet" href="../css/tokens.css">
 <style>
   .practice-screen {
     min-height: 100%;
     background: var(--bg);
-    padding-bottom: 90px;
+    display: flex;
+    flex-direction: column;
   }
-  .practice-header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border-light);
-    padding: 4px var(--space-xl) var(--space-md);
-  }
-  .practice-header-title {
-    font-size: 17px;
-    font-weight: 700;
-    text-align: center;
-    padding-top: var(--space-sm);
-  }
-  .practice-section {
-    padding: var(--space-lg) var(--space-xl);
-  }
-  .practice-section-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--fg-secondary);
-    margin-bottom: var(--space-md);
-  }
-  .practice-mode-card {
-    background: var(--surface);
-    border-radius: var(--radius-lg);
-    padding: var(--space-lg);
-    margin-bottom: var(--space-md);
-    border: 1px solid var(--border-light);
-    box-shadow: var(--shadow-sm);
+
+  .practice-top {
     display: flex;
     align-items: center;
     gap: var(--space-md);
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    transition: var(--transition-normal);
+    padding: var(--space-sm) var(--space-lg);
   }
-  .practice-mode-card:active {
-    transform: scale(0.98);
-    box-shadow: var(--shadow-md);
-  }
-  .practice-mode-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: var(--radius-md);
-    display: flex;
+  .score-pill {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    flex-shrink: 0;
-  }
-  .practice-mode-icon.blue { background: rgba(74, 144, 217, 0.1); }
-  .practice-mode-icon.orange { background: rgba(255, 140, 66, 0.1); }
-  .practice-mode-icon.green { background: rgba(92, 184, 92, 0.1); }
-  .practice-mode-icon.purple { background: rgba(155, 89, 182, 0.1); }
-  .practice-mode-icon.red { background: rgba(255, 107, 107, 0.1); }
-  .practice-mode-icon.gold { background: rgba(255, 217, 61, 0.2); }
-  .practice-mode-info {
-    flex: 1;
-  }
-  .practice-mode-name {
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--fg);
-  }
-  .practice-mode-desc {
-    font-size: 13px;
-    color: var(--fg-secondary);
-    margin-top: 2px;
-  }
-  .practice-mode-meta {
-    display: flex;
-    gap: var(--space-sm);
-    margin-top: 4px;
-  }
-  .practice-mode-arrow {
-    font-size: 20px;
-    color: var(--fg-tertiary);
-  }
-  /* Game Screen (Supermarket Adventure) */
-  .game-screen {
-    min-height: 100%;
-    background: linear-gradient(180deg, #FFF8E1 0%, var(--bg) 20%);
-    padding-bottom: 30px;
-  }
-  .game-header {
-    background: var(--secondary);
-    padding: 4px var(--space-xl) var(--space-md);
-    color: white;
-  }
-  .game-topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-sm) 0;
-  }
-  .game-title {
+    gap: 5px;
+    padding: 7px 14px;
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
     font-family: var(--font-display);
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--accent-dark);
+    transition: var(--transition-fast);
   }
-  .game-timer {
-    display: flex;
+  .score-pill.bump { transform: scale(1.15); }
+  .hearts { margin-left: auto; display: flex; gap: 3px; color: var(--error); }
+  .hearts .lost { color: var(--border-strong); }
+
+  .practice-progress {
+    margin: 0 var(--space-xl);
+    height: 10px;
+    border-radius: var(--radius-pill);
+    background: rgba(79, 70, 229, 0.15);
+    overflow: hidden;
+  }
+  .practice-progress .fill {
+    height: 100%;
+    width: 40%;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(90deg, var(--primary-light), var(--primary));
+    transition: width 0.4s ease;
+  }
+
+  /* 场景标题 */
+  .scene-title {
+    margin: var(--space-lg) var(--space-xl) 0;
+    text-align: center;
+  }
+  .scene-kicker {
+    display: inline-flex;
     align-items: center;
-    gap: 4px;
-    font-size: 18px;
-    font-weight: 700;
-    font-family: var(--font-mono);
-  }
-  .game-stats {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: var(--space-sm);
-  }
-  .game-hearts {
-    font-size: 20px;
-    letter-spacing: 4px;
-  }
-  .game-score {
-    font-size: 18px;
-    font-weight: 700;
-    background: rgba(255,255,255,0.2);
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--accent-dark);
+    background: var(--accent-soft);
     padding: 4px 14px;
     border-radius: var(--radius-pill);
   }
-  .game-content {
-    padding: var(--space-lg) var(--space-xl);
-  }
-  .game-scene {
-    background: var(--surface);
-    border-radius: var(--radius-lg);
-    padding: var(--space-xl);
-    margin-bottom: var(--space-lg);
-    text-align: center;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-light);
-  }
-  .game-scene-illustration {
-    font-size: 48px;
-    letter-spacing: 8px;
-    margin-bottom: var(--space-md);
-    line-height: 1.4;
-  }
-  .game-task-label {
-    font-size: 15px;
-    color: var(--fg-secondary);
-    margin-bottom: var(--space-xs);
-  }
-  .game-task {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--secondary);
+  .scene-question {
+    margin-top: var(--space-md);
     font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 800;
   }
-  .game-task-list {
-    background: var(--bg);
-    border-radius: var(--radius-md);
-    padding: var(--space-md);
-    margin: var(--space-md) 0;
-    text-align: left;
-  }
-  .game-task-item {
-    display: flex;
+  .scene-question .en { color: var(--primary); }
+  .scene-question .say {
+    display: inline-flex;
     align-items: center;
-    gap: var(--space-sm);
-    padding: var(--space-sm) 0;
-    font-size: 15px;
+    justify-content: center;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary-soft);
+    color: var(--primary);
+    vertical-align: -6px;
+    margin-left: 8px;
+    cursor: pointer;
+    transition: var(--transition-fast);
   }
-  .game-task-item.done { color: var(--success); }
-  .game-task-item.current { color: var(--secondary); font-weight: 700; }
-  .game-task-item.pending { color: var(--fg-secondary); }
-  /* Game Options Grid */
-  .game-options-grid {
+  .scene-question .say:active { transform: scale(0.85); background: var(--primary); color: #fff; }
+
+  /* 货架选项 */
+  .shelf {
+    flex: 1;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--space-md);
-    margin-bottom: var(--space-lg);
+    gap: var(--space-lg);
+    padding: var(--space-xl);
+    align-content: start;
   }
-  .game-option-card {
+  .shelf-item {
+    position: relative;
     background: var(--surface);
-    border: 3px solid var(--border);
+    border: 2px solid var(--border-strong);
     border-radius: var(--radius-lg);
-    padding: var(--space-lg);
-    text-align: center;
-    cursor: pointer;
-    transition: var(--transition-normal);
-    -webkit-tap-highlight-color: transparent;
-    min-height: 90px;
+    padding: var(--space-lg) var(--space-md) var(--space-md);
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 4px;
-  }
-  .game-option-card:active { transform: scale(0.95); }
-  .game-option-card.correct {
-    border-color: var(--success);
-    background: rgba(92, 184, 92, 0.08);
-    animation: pulse 0.5s ease;
-  }
-  .game-option-card.wrong {
-    border-color: var(--error);
-    background: rgba(255, 107, 107, 0.08);
-    animation: shake 0.4s ease;
-  }
-  .game-option-emoji {
-    font-size: 40px;
-  }
-  .game-option-label {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--fg);
-  }
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
-  }
-  /* Shopping Cart */
-  .game-cart {
-    background: var(--surface);
-    border-radius: var(--radius-md);
-    padding: var(--space-md) var(--space-lg);
-    display: flex;
-    align-items: center;
     gap: var(--space-sm);
-    margin-top: var(--space-md);
-    border: 1px solid var(--border-light);
-  }
-  .game-cart-label {
-    font-size: 14px;
-    color: var(--fg-secondary);
-    font-weight: 600;
-  }
-  .game-cart-items {
-    display: flex;
-    gap: 4px;
-    font-size: 24px;
-  }
-  .game-audio-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    width: 100%;
-    padding: 12px;
-    background: var(--bg);
-    border: 2px solid var(--border);
-    border-radius: var(--radius-md);
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--fg-secondary);
     cursor: pointer;
-    font-family: var(--font-body);
-    margin-top: var(--space-md);
+    transition: var(--transition-normal);
     -webkit-tap-highlight-color: transparent;
   }
+  .shelf-item:active { transform: scale(0.95); }
+  .shelf-item .art {
+    width: 84px; height: 84px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .shelf-item .name {
+    font-size: 15px;
+    font-weight: 800;
+    font-family: var(--font-display);
+    color: var(--fg-secondary);
+  }
+  .shelf-item.correct {
+    border-color: var(--success);
+    background: var(--success-soft);
+  }
+  .shelf-item.correct .name { color: var(--success-dark); }
+  .shelf-item.incorrect {
+    border-color: var(--error);
+    background: var(--error-soft);
+    animation: shake 0.4s ease;
+  }
+  .shelf-item .stamp {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    border: 3px solid #fff;
+    box-shadow: var(--shadow-md);
+    animation: pop 0.3s ease both;
+  }
+  .shelf-item.correct .stamp.ok,
+  .shelf-item.incorrect .stamp.no { display: flex; }
+  .stamp.ok { background: var(--success); }
+  .stamp.no { background: var(--error); }
+
+  /* 反馈条 */
+  .result-bar {
+    margin: auto var(--space-xl) 0;
+    display: none;
+    align-items: center;
+    gap: var(--space-md);
+    border-radius: var(--radius-md);
+    padding: var(--space-md) var(--space-lg);
+    animation: fadeInUp 0.3s ease both;
+  }
+  .result-bar.show { display: flex; }
+  .result-bar.good { background: var(--success-soft); }
+  .result-bar.oops { background: var(--error-soft); }
+  .result-icon {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .result-bar.good .result-icon { background: var(--success); }
+  .result-bar.oops .result-icon { background: var(--error); }
+  .result-body { flex: 1; }
+  .result-title { font-size: 15px; font-weight: 800; }
+  .result-bar.good .result-title { color: var(--success-dark); }
+  .result-bar.oops .result-title { color: var(--error); }
+  .result-desc { font-size: 12px; font-weight: 600; color: var(--fg-secondary); margin-top: 1px; }
+  .practice-cta { padding: var(--space-lg) var(--space-xl) 24px; }
 </style>
 </head>
 <body>
 <div class="screen">
-  <div class="dynamic-island"></div>
   <div class="status-bar dark">
     <span class="status-time">9:41</span>
-    <span class="status-icons">
-      <svg width="16" height="12" viewBox="0 0 16 12"><rect x="0" y="6" width="3" height="6" rx="0.5" fill="currentColor" opacity="0.3"/><rect x="4.5" y="4" width="3" height="8" rx="0.5" fill="currentColor" opacity="0.5"/><rect x="9" y="2" width="3" height="10" rx="0.5" fill="currentColor" opacity="0.7"/><rect x="13" y="0" width="3" height="12" rx="0.5" fill="currentColor"/></svg>
-      <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 3.6C10.2 3.6 12.2 4.6 13.5 6.2L15 4.5C13.3 2.5 10.8 1.2 8 1.2S2.7 2.5 1 4.5L2.5 6.2C3.8 4.6 5.8 3.6 8 3.6z" fill="currentColor" opacity="0.3"/><path d="M8 7c1.3 0 2.5.6 3.3 1.5L12.5 9.8C11.4 8.5 9.8 7.7 8 7.7s-3.4.8-4.5 2.1l1.2-1.3C5.5 7.6 6.7 7 8 7z" fill="currentColor" opacity="0.6"/><circle cx="8" cy="10.8" r="1.2" fill="currentColor"/></svg>
-      <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2" stroke="currentColor" stroke-width="1" fill="none"/><rect x="22" y="4" width="2.5" height="4" rx="1" fill="currentColor" opacity="0.4"/><rect x="1.5" y="2.5" width="14" height="7" rx="1" fill="currentColor"/></svg>
-    </span>
-  </div>
-
-  <div class="screen-content">
-    <div class="game-screen">
-      <!-- Game Header -->
-      <div class="game-header">
-        <div class="game-topbar">
-          <button class="nav-back" style="color:white;" onclick="showPracticeHub()">← 退出</button>
-          <span class="game-title">🏪 超市大冒险</span>
-          <span class="game-timer">⏱️ <span id="gameTimer">3:25</span></span>
-        </div>
-        <div class="game-stats">
-          <span class="game-hearts" id="gameHearts">❤️❤️❤️</span>
-          <span class="game-score">💰 <span id="gameScore">320</span>分</span>
-        </div>
-      </div>
-
-      <!-- Game Content -->
-      <div class="game-content">
-        <!-- Task Display -->
-        <div class="game-scene">
-          <div class="game-scene-illustration">🍎🍊🍌🍇🍓🍑</div>
-          <div class="game-task-list">
-            <div class="game-task-item done">✅ 买2个 apple</div>
-            <div class="game-task-item current">☐ 买1个 orange</div>
-            <div class="game-task-item pending">☐ 买3个 banana</div>
-            <div class="game-task-item pending">☐ 买1串 grape</div>
-          </div>
-          <div class="game-task-label">请点击 <b style="color:var(--secondary);">"orange"</b> 对应的图片！</div>
-        </div>
-
-        <!-- Options Grid -->
-        <div class="game-options-grid">
-          <div class="game-option-card" onclick="selectOption(this, false)">
-            <span class="game-option-emoji">🍎</span>
-            <span class="game-option-label">apple</span>
-          </div>
-          <div class="game-option-card correct" onclick="selectOption(this, true)">
-            <span class="game-option-emoji">🍊</span>
-            <span class="game-option-label">orange</span>
-          </div>
-          <div class="game-option-card" onclick="selectOption(this, false)">
-            <span class="game-option-emoji">🍌</span>
-            <span class="game-option-label">banana</span>
-          </div>
-          <div class="game-option-card" onclick="selectOption(this, false)">
-            <span class="game-option-emoji">🍇</span>
-            <span class="game-option-label">grape</span>
-          </div>
-        </div>
-
-        <!-- Shopping Cart -->
-        <div class="game-cart">
-          <span class="game-cart-label">🛒 购物车:</span>
-          <div class="game-cart-items">🍎🍎</div>
-        </div>
-
-        <button class="game-audio-btn">🔊 再听一次任务</button>
-      </div>
+    <div class="status-icons">
+      <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 4.5a9 9 0 0 1 12 0"/><path d="M4.5 7a5.5 5.5 0 0 1 7 0"/><circle cx="8" cy="9.8" r="1.2" fill="currentColor" stroke="none"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="currentColor" fill="none" opacity="0.4"/><rect x="2" y="2" width="18" height="8" rx="1.8" fill="currentColor"/><path d="M23.5 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity="0.4"/></svg>
     </div>
   </div>
 
+  <div class="screen-content">
+    <div class="practice-screen">
+      <div class="practice-top">
+        <button class="icon-btn" aria-label="退出">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+        </button>
+        <span class="score-pill" id="scorePill">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><path d="M12 3l1.9 5.8L20 10.6l-4.9 3.9 1.6 6-4.7-3.6-4.7 3.6 1.6-6L4 10.6l6.1-1.8z"/></svg>
+          <span id="scoreVal">120</span>
+        </span>
+        <div class="hearts" id="hearts" aria-label="生命值 3">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6.5A4.5 4.5 0 0 0 2 9c0 6 10 13 10 13s10-7 10-13a4.5 4.5 0 0 0-10-2.5z"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6.5A4.5 4.5 0 0 0 2 9c0 6 10 13 10 13s10-7 10-13a4.5 4.5 0 0 0-10-2.5z"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6.5A4.5 4.5 0 0 0 2 9c0 6 10 13 10 13s10-7 10-13a4.5 4.5 0 0 0-10-2.5z"/></svg>
+        </div>
+      </div>
+      <div class="practice-progress"><div class="fill" id="progFill"></div></div>
+
+      <div class="scene-title">
+        <span class="scene-kicker">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1.5"/><circle cx="19" cy="21" r="1.5"/><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 7H6"/></svg>
+          超市大冒险 · 水果区
+        </span>
+        <div class="scene-question">哪个是 <span class="en">orange</span>？
+          <button class="say" aria-label="听题">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="shelf">
+        <div class="shelf-item" data-ans="wrong" role="button">
+          <div class="art">
+            <svg width="72" height="72" viewBox="0 0 72 72">
+              <circle cx="36" cy="40" r="24" fill="#FF6B6B"/>
+              <path d="M36 16c1-8 7-11 7-11s2 7-2 11z" fill="#10B981"/>
+              <path d="M36 16c-4-5-10-5-10-5s1 7 6 8" fill="#34D399"/>
+              <ellipse cx="28" cy="34" rx="6" ry="9" fill="#FF9B9B" transform="rotate(-20 28 34)"/>
+            </svg>
+          </div>
+          <div class="name">apple</div>
+          <span class="stamp ok"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+          <span class="stamp no"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg></span>
+        </div>
+
+        <div class="shelf-item" data-ans="wrong" role="button">
+          <div class="art">
+            <svg width="72" height="72" viewBox="0 0 72 72">
+              <path d="M18 52c-2-16 6-34 24-38 4-1 8 0 9 3 1 3-1 6-5 8-14 6-20 16-22 27z" fill="#FDE047"/>
+              <path d="M24 50c-1.5-12 5-26 19-30" fill="none" stroke="#FACC15" stroke-width="5" stroke-linecap="round"/>
+              <path d="M51 14c3-1 6 0 6 3" fill="none" stroke="#B45309" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="name">banana</div>
+          <span class="stamp ok"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+          <span class="stamp no"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg></span>
+        </div>
+
+        <div class="shelf-item" data-ans="right" role="button">
+          <div class="art">
+            <svg width="72" height="72" viewBox="0 0 72 72">
+              <circle cx="36" cy="42" r="24" fill="#FF9F43"/>
+              <path d="M36 18c1-8 7-11 7-11s2 7-2 11z" fill="#10B981"/>
+              <path d="M36 18c-4-5-10-5-10-5s1 7 6 8" fill="#34D399"/>
+              <ellipse cx="28" cy="36" rx="6" ry="9" fill="#FFC583" transform="rotate(-20 28 36)"/>
+              <g stroke="#F08A24" stroke-width="2" stroke-linecap="round" opacity="0.6">
+                <path d="M22 46c2 3 6 5 10 4"/>
+              </g>
+            </svg>
+          </div>
+          <div class="name">orange</div>
+          <span class="stamp ok"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+          <span class="stamp no"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg></span>
+        </div>
+
+        <div class="shelf-item" data-ans="wrong" role="button">
+          <div class="art">
+            <svg width="72" height="72" viewBox="0 0 72 72">
+              <g fill="#8B5CF6">
+                <circle cx="30" cy="34" r="8"/>
+                <circle cx="42" cy="32" r="8"/>
+                <circle cx="36" cy="44" r="8"/>
+                <circle cx="27" cy="44" r="7"/>
+                <circle cx="46" cy="42" r="7"/>
+                <circle cx="36" cy="24" r="7"/>
+              </g>
+              <path d="M36 16c0-5 3-8 7-8" fill="none" stroke="#7C5A3A" stroke-width="3.4" stroke-linecap="round"/>
+              <path d="M43 10c4-1 7 1 7 4-4 1-7-1-7-4z" fill="#10B981"/>
+            </svg>
+          </div>
+          <div class="name">grape</div>
+          <span class="stamp ok"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>
+          <span class="stamp no"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg></span>
+        </div>
+      </div>
+
+      <div class="result-bar good" id="barGood">
+        <div class="result-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <div class="result-body">
+          <div class="result-title">答对啦 +10 分</div>
+          <div class="result-desc">orange 是橘子，一种甜甜的水果</div>
+        </div>
+      </div>
+      <div class="result-bar oops" id="barOops">
+        <div class="result-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+        </div>
+        <div class="result-body">
+          <div class="result-title">差一点，再想想</div>
+          <div class="result-desc">提示：它圆圆的、橙色的，词尾 e 不发音</div>
+        </div>
+      </div>
+
+      <div class="practice-cta" id="ctaWrap" style="display: none;">
+        <button class="btn btn-primary btn-block" id="nextBtn">下一题</button>
+      </div>
+    </div>
+  </div>
   <div class="home-indicator"></div>
 </div>
 
 <script>
-function selectOption(el, isCorrect) {
-  if (el.classList.contains('correct') || el.classList.contains('wrong')) return;
-  if (isCorrect) {
-    el.classList.add('correct');
-    // Update score
-    const scoreEl = document.getElementById('gameScore');
-    scoreEl.textContent = parseInt(scoreEl.textContent) + 50;
-  } else {
-    el.classList.add('wrong');
-    // Remove a heart
-    const hearts = document.getElementById('gameHearts');
-    const count = hearts.textContent.split('❤️').length - 1;
-    if (count > 1) {
-      hearts.textContent = '❤️'.repeat(count - 1);
-    }
-    setTimeout(() => el.classList.remove('wrong'), 600);
-  }
-}
+  let answered = false;
+  const items = document.querySelectorAll('.shelf-item');
+  const barGood = document.getElementById('barGood');
+  const barOops = document.getElementById('barOops');
+  const ctaWrap = document.getElementById('ctaWrap');
+  const progFill = document.getElementById('progFill');
+  const hearts = document.getElementById('hearts');
+  const scorePill = document.getElementById('scorePill');
+  const scoreVal = document.getElementById('scoreVal');
 
-function showPracticeHub() {
-  // In a real app, navigate back
-}
+  items.forEach(item => {
+    item.addEventListener('click', () => {
+      if (answered) return;
+      answered = true;
+      if (item.dataset.ans === 'right') {
+        item.classList.add('correct');
+        barGood.classList.add('show');
+        progFill.style.width = '50%';
+        scoreVal.textContent = '130';
+        scorePill.classList.add('bump');
+        setTimeout(() => scorePill.classList.remove('bump'), 250);
+      } else {
+        item.classList.add('incorrect');
+        barOops.classList.add('show');
+        const first = hearts.querySelector('svg:not(.lost)');
+        if (first) first.classList.add('lost');
+      }
+      setTimeout(() => { ctaWrap.style.display = 'block'; }, 350);
+    });
+  });
 </script>
 </body>
 </html>

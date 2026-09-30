@@ -3,400 +3,372 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WordWorld - 学习主页</title>
+<title>WordWorld - 场景地图</title>
 <link rel="stylesheet" href="../css/tokens.css">
 <style>
   .home-screen {
     min-height: 100%;
-    padding-bottom: 90px;
+    background: var(--bg);
+    padding-bottom: 100px;
   }
-  .home-header {
-    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
-    padding: 0 var(--space-xl) var(--space-xl);
-    padding-top: 8px;
-    color: white;
-  }
-  .home-topbar {
+
+  /* 顶部玩家栏 */
+  .player-bar {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: var(--space-sm) 0;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-xl);
   }
-  .home-logo {
+  .player-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background: #D6DEFF;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 2px solid #fff;
+    box-shadow: var(--shadow-sm);
+  }
+  .player-name {
     font-family: var(--font-display);
-    font-size: 22px;
-    font-weight: bold;
-    color: white;
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+  .player-grade {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--fg-secondary);
+  }
+  .player-meta { margin-left: auto; display: flex; gap: var(--space-sm); }
+  .meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    font-size: 13px;
+    font-weight: 800;
+    font-family: var(--font-display);
+  }
+  .meta-pill.streak { color: var(--accent-dark); }
+  .meta-pill.gems { color: #0E7490; }
+
+  /* 今日目标 */
+  .quest-card {
+    margin: var(--space-sm) var(--space-xl) 0;
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 70%);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
+    position: relative;
+    overflow: hidden;
+  }
+  .quest-card::after {
+    content: '';
+    position: absolute;
+    right: -30px;
+    top: -30px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+  }
+  .quest-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+  }
+  .quest-title {
+    font-size: 14px;
+    font-weight: 800;
     display: flex;
     align-items: center;
     gap: 6px;
+    opacity: 0.95;
   }
-  .home-topbar-icons {
-    display: flex;
-    gap: var(--space-md);
-    align-items: center;
+  .quest-count {
+    font-size: 13px;
+    font-weight: 800;
+    font-family: var(--font-display);
+    opacity: 0.9;
   }
-  .topbar-icon-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.2);
+  .quest-card .progress-bar { background: rgba(255,255,255,0.25); height: 12px; }
+  .quest-card .progress-fill { background: #fff; }
+  .quest-foot {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 18px;
+    justify-content: space-between;
+    margin-top: var(--space-md);
+  }
+  .quest-foot .desc { font-size: 12px; font-weight: 600; opacity: 0.85; }
+  .quest-cta {
     border: none;
+    background: #fff;
+    color: var(--primary-dark);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 800;
+    padding: 9px 18px;
+    border-radius: var(--radius-pill);
     cursor: pointer;
-    position: relative;
+    box-shadow: 0 2px 0 rgba(30,27,75,0.18);
+    transition: var(--transition-normal);
+  }
+  .quest-cta:active { transform: translateY(2px); box-shadow: none; }
+
+  /* 每日挑战条 */
+  .daily-banner {
+    margin: var(--space-md) var(--space-xl) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    background: var(--accent-soft);
+    border: 1px solid #FFDFC2;
+    border-radius: var(--radius-md);
+    padding: var(--space-md) var(--space-lg);
+    cursor: pointer;
+    transition: var(--transition-normal);
     -webkit-tap-highlight-color: transparent;
   }
-  .notification-badge {
-    position: absolute;
-    top: -2px;
-    right: -2px;
-    width: 16px;
-    height: 16px;
-    background: var(--error);
-    border-radius: 50%;
-    font-size: 10px;
-    color: white;
+  .daily-banner:active { transform: translateY(2px); }
+  .daily-icon {
+    width: 40px; height: 40px;
+    border-radius: var(--radius-sm);
+    background: var(--accent);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    box-shadow: var(--edge-accent-sm);
+  }
+  .daily-body { flex: 1; }
+  .daily-title { font-size: 15px; font-weight: 800; color: var(--accent-dark); }
+  .daily-desc { font-size: 12px; font-weight: 600; color: #9A5B2D; margin-top: 1px; }
+  .daily-go { color: var(--accent-dark); display: flex; align-items: center; }
+
+  /* 地图 */
+  .map-section { padding: var(--space-xl) var(--space-xl) 0; }
+  .map-header {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid var(--primary);
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--space-lg);
   }
-  .home-user-card {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    padding: var(--space-md) 0;
-  }
-  .home-avatar {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    border: 2px solid rgba(255,255,255,0.5);
-  }
-  .home-user-info {
-    flex: 1;
-  }
-  .home-user-name {
-    font-size: 20px;
-    font-weight: 700;
+  .map-title {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 800;
     display: flex;
     align-items: center;
     gap: 8px;
   }
-  .home-user-grade {
-    font-size: 12px;
-    font-weight: 600;
-    background: rgba(255,255,255,0.2);
-    padding: 2px 10px;
-    border-radius: var(--radius-pill);
-  }
-  .home-user-subtitle {
-    font-size: 13px;
-    opacity: 0.85;
-    margin-top: 2px;
-  }
-  .home-progress-section {
-    background: rgba(255,255,255,0.15);
-    border-radius: var(--radius-md);
-    padding: var(--space-md);
-    margin-top: var(--space-sm);
-  }
-  .home-progress-label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    margin-bottom: 6px;
-  }
-  .home-progress-bar {
-    height: 8px;
-    background: rgba(255,255,255,0.25);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .home-progress-fill {
-    height: 100%;
-    background: var(--warning);
-    border-radius: 4px;
-    width: 60%;
-    transition: width 1s ease;
-  }
-  /* Daily Challenge Banner */
-  .daily-banner {
-    margin: var(--space-lg) var(--space-xl);
-    background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
-    border-radius: var(--radius-lg);
-    padding: var(--space-lg);
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    border: 1px solid rgba(255, 140, 66, 0.2);
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .daily-banner:active { transform: scale(0.98); }
-  .daily-emoji {
-    font-size: 40px;
-    animation: pulse 2s ease infinite;
-  }
-  .daily-info {
-    flex: 1;
-  }
-  .daily-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--secondary-dark);
-  }
-  .daily-desc {
-    font-size: 13px;
-    color: var(--fg-secondary);
-    margin-top: 2px;
-  }
-  .daily-streak {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--secondary);
-    background: rgba(255, 140, 66, 0.12);
-    padding: 4px 12px;
-    border-radius: var(--radius-pill);
-  }
-  /* Map Section */
-  .map-section {
-    padding: var(--space-md) 0;
-  }
-  .map-title {
-    font-size: 20px;
-    font-weight: 700;
-    padding: 0 var(--space-xl);
-    margin-bottom: var(--space-md);
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-  }
-  .map-title-emoji {
-    font-size: 24px;
-  }
-  /* Scene Group */
-  .scene-group {
-    margin: 0 var(--space-xl) var(--space-lg);
-    position: relative;
-  }
-  .scene-connector {
+  .map-sub { font-size: 12px; font-weight: 700; color: var(--fg-tertiary); }
+
+  .map-path { position: relative; }
+  .map-path::before {
+    content: '';
     position: absolute;
-    left: 24px;
-    bottom: -20px;
-    width: 2px;
-    height: 20px;
-    background: var(--border);
+    left: 35px;
+    top: 28px;
+    bottom: 28px;
+    border-left: 3px dashed var(--border-strong);
+    z-index: 0;
   }
-  .scene-card-main {
-    background: var(--surface);
-    border-radius: var(--radius-lg);
-    padding: var(--space-lg);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-light);
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    transition: var(--transition-normal);
-  }
-  .scene-card-main:active {
-    transform: scale(0.98);
-    box-shadow: var(--shadow-md);
-  }
-  .scene-card-main.unlocked {
-    border-left: 4px solid var(--primary);
-  }
-  .scene-card-main.current {
-    border-left: 4px solid var(--secondary);
-    box-shadow: var(--shadow-md), 0 0 0 1px rgba(255, 140, 66, 0.15);
-  }
-  .scene-card-main.locked {
-    opacity: 0.6;
-    border-left: 4px solid var(--fg-tertiary);
-  }
-  .scene-card-top {
+  .scene-node {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     gap: var(--space-md);
-    margin-bottom: var(--space-sm);
+    margin-bottom: var(--space-lg);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
-  .scene-big-icon {
-    font-size: 36px;
-    width: 52px;
-    height: 52px;
+  .node-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg);
-    border-radius: var(--radius-md);
+    flex-shrink: 0;
+    border: 2px solid #fff;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    transition: var(--transition-normal);
   }
-  .scene-card-title {
-    font-size: 18px;
-    font-weight: 700;
-  }
-  .scene-card-progress {
-    font-size: 13px;
-    color: var(--fg-secondary);
-    margin-top: 2px;
-  }
-  .scene-card-lock {
-    font-size: 24px;
-    margin-left: auto;
-  }
-  .scene-subitems {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xs);
-    margin-top: var(--space-md);
-  }
-  .scene-subitem {
+  .scene-node:active .node-icon { transform: scale(0.94); }
+  .node-icon.done { background: var(--success); color: #fff; }
+  .node-icon.current { background: var(--accent); color: #fff; animation: pulse-ring 2s ease infinite; }
+  .node-icon.locked { background: #E3E5F3; color: var(--fg-tertiary); box-shadow: var(--shadow-sm); }
+  .node-badge {
+    position: absolute;
+    bottom: -6px;
+    right: -6px;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    border: 2px solid var(--border);
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 6px 10px;
-    background: var(--bg);
-    border-radius: var(--radius-pill);
-    font-size: 13px;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
     color: var(--fg-secondary);
   }
-  .scene-subitem.completed {
-    background: rgba(92, 184, 92, 0.1);
-    color: var(--success);
+  .node-badge.star { color: var(--accent-dark); border-color: #FFDFC2; }
+  .node-body {
+    flex: 1;
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-md) var(--space-lg);
   }
-  .scene-subitem.locked {
-    opacity: 0.5;
+  .scene-node.locked .node-body { opacity: 0.7; }
+  .node-title { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+  .node-title .tag {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    color: #fff;
+    letter-spacing: 0.5px;
   }
+  .node-desc { font-size: 12px; font-weight: 600; color: var(--fg-secondary); margin-top: 2px; }
+  .node-progress { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .node-progress .progress-bar { flex: 1; height: 8px; }
+  .node-progress .p-text { font-size: 11px; font-weight: 800; color: var(--fg-tertiary); }
 </style>
 </head>
 <body>
 <div class="screen">
-  <div class="dynamic-island"></div>
+  <div class="status-bar dark">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">
+      <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 4.5a9 9 0 0 1 12 0"/><path d="M4.5 7a5.5 5.5 0 0 1 7 0"/><circle cx="8" cy="9.8" r="1.2" fill="currentColor" stroke="none"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="currentColor" fill="none" opacity="0.4"/><rect x="2" y="2" width="18" height="8" rx="1.8" fill="currentColor"/><path d="M23.5 4v4a2 2 0 0 0 0-4z" fill="currentColor" opacity="0.4"/></svg>
+    </div>
+  </div>
 
   <div class="screen-content">
     <div class="home-screen">
-      <!-- Header -->
-      <div class="home-header">
-        <div class="home-topbar">
-          <div class="home-logo">🍎 WordWorld</div>
-          <div class="home-topbar-icons">
-            <button class="topbar-icon-btn">
-              🔔
-              <span class="notification-badge">2</span>
-            </button>
-            <button class="topbar-icon-btn">⚙️</button>
-          </div>
+      <div class="player-bar">
+        <div class="player-avatar">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
         </div>
-        <div class="home-user-card">
-          <div class="home-avatar">🧒</div>
-          <div class="home-user-info">
-            <div class="home-user-name">
-              小明
-              <span class="home-user-grade">三年级</span>
-            </div>
-            <div class="home-user-subtitle">已连续学习 7 天 🔥</div>
-          </div>
+        <div>
+          <div class="player-name">小明 <span class="badge badge-warning" style="vertical-align:2px">Lv.3</span></div>
+          <div class="player-grade">三年级 · 连续学习 7 天</div>
         </div>
-        <div class="home-progress-section">
-          <div class="home-progress-label">
-            <span>今日已学: 12 / 20 个单词</span>
-            <span style="font-weight:700;">60%</span>
-          </div>
-          <div class="home-progress-bar">
-            <div class="home-progress-fill"></div>
-          </div>
+        <div class="player-meta">
+          <span class="meta-pill streak">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><path d="M12 2c1 4-4 6-4 10a4 4 0 0 0 8 0c0-1.5-.5-2.5-1-3.5 2.5 1 4 3.5 4 6a7 7 0 1 1-14 0c0-6 6-8 7-12.5z"/></svg>
+            7
+          </span>
+          <span class="meta-pill gems">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20"/><path d="M12 21L8 9l4-6 4 6z"/></svg>
+            120
+          </span>
         </div>
       </div>
 
-      <!-- Daily Challenge -->
+      <div class="quest-card">
+        <div class="quest-top">
+          <span class="quest-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            今日目标
+          </span>
+          <span class="quest-count">12 / 20 单词</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width: 60%"></div></div>
+        <div class="quest-foot">
+          <span class="desc">还差 8 个单词，继续加油</span>
+          <button class="quest-cta">继续学习</button>
+        </div>
+      </div>
+
       <div class="daily-banner">
-        <span class="daily-emoji">⏰</span>
-        <div class="daily-info">
-          <div class="daily-title">每日挑战已刷新！</div>
-          <div class="daily-desc">20题限时5分钟，开始挑战吧</div>
+        <div class="daily-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
         </div>
-        <span class="daily-streak">🔥 3天</span>
+        <div class="daily-body">
+          <div class="daily-title">每日挑战已刷新</div>
+          <div class="daily-desc">超市大冒险 · 限时 5 分钟，赢 20 金币</div>
+        </div>
+        <div class="daily-go">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
       </div>
 
-      <!-- Learning Map -->
       <div class="map-section">
-        <div class="map-title">
-          <span class="map-title-emoji">📍</span>
-          学习地图
+        <div class="map-header">
+          <div class="map-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20l-5.5-2.5V4L9 6.5 15 4l5.5 2.5V20L15 17.5 9 20z"/><path d="M9 6.5V20"/><path d="M15 4v13.5"/></svg>
+            学习地图
+          </div>
+          <span class="map-sub">已完成 1 / 6 个场景</span>
         </div>
 
-        <!-- Scene 1: 我的家 -->
-        <div class="scene-group">
-          <div class="scene-card-main unlocked">
-            <div class="scene-card-top">
-              <div class="scene-big-icon">🏠</div>
-              <div>
-                <div class="scene-card-title">我的家</div>
-                <div class="scene-card-progress">已学 8/15 个单词</div>
-              </div>
+        <div class="map-path">
+          <div class="scene-node">
+            <div class="node-icon done">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+              <span class="node-badge star">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><path d="M12 3l1.9 5.8L20 10.6l-4.9 3.9 1.6 6-4.7-3.6-4.7 3.6 1.6-6L4 10.6l6.1-1.8z"/></svg>
+                3
+              </span>
             </div>
-            <div class="scene-subitems">
-              <span class="scene-subitem completed">✅ 厨房</span>
-              <span class="scene-subitem completed">✅ 客厅</span>
-              <span class="scene-subitem">🔒 卧室</span>
-              <span class="scene-subitem locked">🔒 浴室</span>
+            <div class="node-body">
+              <div class="node-title">我的家</div>
+              <div class="node-desc">15 个单词 · 全部掌握</div>
             </div>
           </div>
-          <div class="scene-connector"></div>
-        </div>
 
-        <!-- Scene 2: 我的学校 (current) -->
-        <div class="scene-group">
-          <div class="scene-card-main current">
-            <div class="scene-card-top">
-              <div class="scene-big-icon">🏫</div>
-              <div>
-                <div class="scene-card-title">我的学校</div>
-                <div class="scene-card-progress">已学 2/12 个单词 · <span style="color:var(--secondary);font-weight:600;">继续学习</span></div>
-              </div>
+          <div class="scene-node">
+            <div class="node-icon current">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1.6"/><circle cx="19" cy="21" r="1.6"/><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 7H6"/></svg>
+              <span class="node-badge">12/15</span>
             </div>
-            <div class="scene-subitems">
-              <span class="scene-subitem completed">✅ 教室</span>
-              <span class="scene-subitem">🔒 操场</span>
-              <span class="scene-subitem locked">🔒 图书馆</span>
+            <div class="node-body">
+              <div class="node-title">超市购物 <span class="tag">进行中</span></div>
+              <div class="node-desc">水果区学到一半，回来继续</div>
+              <div class="node-progress">
+                <div class="progress-bar"><div class="progress-fill accent" style="width: 80%"></div></div>
+                <span class="p-text">80%</span>
+              </div>
             </div>
           </div>
-          <div class="scene-connector"></div>
-        </div>
 
-        <!-- Scene 3: 超市购物 -->
-        <div class="scene-group">
-          <div class="scene-card-main locked">
-            <div class="scene-card-top">
-              <div class="scene-big-icon">🛒</div>
-              <div>
-                <div class="scene-card-title">超市购物</div>
-                <div class="scene-card-progress">完成「我的学校」后解锁</div>
-              </div>
-              <span class="scene-card-lock">🔒</span>
+          <div class="scene-node locked">
+            <div class="node-icon locked">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="node-body">
+              <div class="node-title">城市公园</div>
+              <div class="node-desc">完成「超市购物」后解锁</div>
             </div>
           </div>
-          <div class="scene-connector"></div>
-        </div>
 
-        <!-- Scene 4: 公园与自然 -->
-        <div class="scene-group">
-          <div class="scene-card-main locked">
-            <div class="scene-card-top">
-              <div class="scene-big-icon">🌳</div>
-              <div>
-                <div class="scene-card-title">公园与自然</div>
-                <div class="scene-card-progress">完成「超市购物」后解锁</div>
-              </div>
-              <span class="scene-card-lock">🔒</span>
+          <div class="scene-node locked">
+            <div class="node-icon locked">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="node-body">
+              <div class="node-title">动物园</div>
+              <div class="node-desc">完成「城市公园」后解锁</div>
             </div>
           </div>
         </div>
@@ -404,26 +376,32 @@
     </div>
   </div>
 
-  <!-- Tab Bar -->
   <div class="tab-bar">
     <button class="tab-item active">
-      <span class="tab-icon">📖</span>
-      <span class="tab-label">学习</span>
+      <span class="tab-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+      </span>
+      <span class="tab-label">首页</span>
     </button>
     <button class="tab-item">
-      <span class="tab-icon">🎮</span>
+      <span class="tab-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      </span>
       <span class="tab-label">练习</span>
     </button>
     <button class="tab-item">
-      <span class="tab-icon">✏️</span>
-      <span class="tab-label">作文</span>
+      <span class="tab-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5A4.5 4.5 0 0 0 2 9c0 6 10 13 10 13s10-7 10-13a4.5 4.5 0 0 0-10-2.5z"/></svg>
+      </span>
+      <span class="tab-label">复习</span>
     </button>
     <button class="tab-item">
-      <span class="tab-icon">👤</span>
+      <span class="tab-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </span>
       <span class="tab-label">我的</span>
     </button>
   </div>
-
   <div class="home-indicator"></div>
 </div>
 </body>
