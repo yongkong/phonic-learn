@@ -124,16 +124,6 @@ const goRegister = () => {
   margin-top: $space-3xl;
   min-height: 88rpx;
   min-width: 320rpx;
-  box-shadow: $edge-accent;
-  transition: transform $transition-normal, box-shadow $transition-normal;
-
-  &::after {
-    border: none;
-  }
-
-  &:active {
-    transform: translateY(4rpx);
-    box-shadow: $edge-accent-sm;
-  }
+  @include press-feedback($edge-accent, $edge-accent-sm);
 }
 </style>

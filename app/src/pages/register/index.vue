@@ -260,17 +260,7 @@ const handleRegister = async () => {
   border: none;
   min-height: 96rpx;
   line-height: 96rpx;
-  box-shadow: $edge-primary;
-  transition: transform $transition-normal, box-shadow $transition-normal;
-
-  &::after {
-    border: none;
-  }
-
-  &:active {
-    transform: translateY(4rpx);
-    box-shadow: $edge-primary-sm;
-  }
+  @include press-feedback;
 
   &.disabled {
     background: $fg-tertiary;

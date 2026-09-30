@@ -15,6 +15,8 @@ $accent: #F97316;
 $accent-light: #FB923C;
 $accent-dark: #C2410C;
 $accent-soft: #FFF3E8;
+// 星级徽章描边（设计稿 03-home .node-badge.star）
+$accent-badge-border: #FFDFC2;
 $success: #10B981;
 $success-light: #4ADE80;
 $warning: #F59E0B;
@@ -72,7 +74,6 @@ $radius-circle: 50%;
 $shadow-sm: 0 2rpx 4rpx rgba(30, 27, 75, 0.05), 0 4rpx 16rpx rgba(30, 27, 75, 0.06);
 $shadow-md: 0 8rpx 32rpx rgba(30, 27, 75, 0.1);
 $shadow-lg: 0 24rpx 64rpx rgba(30, 27, 75, 0.16);
-$shadow-xl: 0 24rpx 64rpx rgba(30, 27, 75, 0.16);
 
 // 游戏实体按钮的"底边"立体感（按压时下沉：translateY(4rpx) + 底边变薄）
 $edge-primary: 0 6rpx 0 0 $primary-dark;

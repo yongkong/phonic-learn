@@ -1,0 +1,17 @@
+// 共享 SCSS mixins —— 依赖 tokens.scss 的变量（vite 已按序自动注入两个文件）
+
+// 游戏实体按钮按压反馈（MASTER v2：下沉 4rpx + 底边变薄，不位移邻居）
+@mixin press-feedback($edge: $edge-primary, $edge-pressed: $edge-primary-sm) {
+  box-shadow: $edge;
+  transition: transform $transition-normal, box-shadow $transition-normal;
+
+  // uni-app button 自带边框需清除
+  &::after {
+    border: none;
+  }
+
+  &:active {
+    transform: translateY(4rpx);
+    box-shadow: $edge-pressed;
+  }
+}

@@ -6,7 +6,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: '@import "@/styles/tokens.scss";',
+        additionalData: '@import "@/styles/tokens.scss"; @import "@/styles/mixins.scss";',
       },
     },
   },

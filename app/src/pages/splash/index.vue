@@ -26,12 +26,8 @@ onShow(() => {
   setTimeout(() => {
     if (navigated.value) return
     navigated.value = true
-    const dest = resolveSplashDestination(userStore.isLoggedIn)
-    if (dest.isTab) {
-      uni.switchTab({ url: dest.url })
-    } else {
-      uni.navigateTo({ url: dest.url })
-    }
+    // reLaunch 清空页面栈：splash 不滞留，返回键不会再弹回启动页
+    uni.reLaunch({ url: resolveSplashDestination(userStore.isLoggedIn) })
   }, 3000)
 })
 </script>

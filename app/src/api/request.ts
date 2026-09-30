@@ -1,3 +1,5 @@
+import { readStoredToken } from '@/stores/user'
+
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
 export interface ApiResponse<T = any> {
@@ -14,12 +16,7 @@ export function request<T = any>(
   options: RequestOptions = {}
 ): Promise<T> {
   return new Promise((resolve, reject) => {
-    // user store 持久化形状为 {"user":{...token},"isOnboarded":...}，兼容平铺 {token} 旧格式
-    let token = ''
-    try {
-      const parsed = JSON.parse(uni.getStorageSync('user'))
-      token = parsed?.user?.token || parsed?.token || ''
-    } catch (e) {}
+    const token = readStoredToken()
 
     uni.request({
       url: `${BASE_URL}${url}`,

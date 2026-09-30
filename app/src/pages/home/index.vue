@@ -2,7 +2,7 @@
   <view class="home-page">
     <!-- User Greeting -->
     <view class="greeting">
-      <text class="greeting-text">你好, <text class="nickname">{{ userStore.nickname }}</text></text>
+      <text class="greeting-text">你好，<text class="nickname">{{ userStore.nickname }}</text></text>
       <text class="progress-text">已学会 {{ totals.learned }} / {{ totals.total }} 个单词</text>
     </view>
 
@@ -10,7 +10,7 @@
     <view class="scene-map">
       <view class="map-header">
         <text class="map-title">学习地图</text>
-        <text class="map-sub">{{ scenes.length }} 个场景</text>
+        <text class="map-sub">{{ sceneNodes.length }} 个场景</text>
       </view>
 
       <!-- Loading -->
@@ -31,33 +31,33 @@
       <!-- Scene Nodes -->
       <view v-else class="map-path">
         <view
-          v-for="scene in scenes"
-          :key="scene.id"
+          v-for="node in sceneNodes"
+          :key="node.id"
           class="scene-node"
-          :class="sceneState(scene)"
-          @click="openScene(scene)"
+          :class="node.state"
+          @click="openScene(node.id)"
         >
           <view class="node-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path v-for="(d, i) in iconPaths(scene)" :key="i" :d="d" />
+              <path v-for="(d, i) in node.iconPaths" :key="i" :d="d" />
             </svg>
-            <view v-if="sceneState(scene) !== 'fresh'" class="node-badge" :class="{ star: sceneState(scene) === 'done' }">
-              <text>{{ sceneLearned(scene) }}/{{ sceneTotal(scene) }}</text>
+            <view v-if="node.state !== 'fresh'" class="node-badge" :class="{ star: node.state === 'done' }">
+              <text>{{ node.learned }}/{{ node.total }}</text>
             </view>
           </view>
           <view class="node-body">
             <view class="node-title">
-              <text>{{ scene.name }}</text>
-              <text v-if="sceneState(scene) === 'current'" class="tag">进行中</text>
+              <text>{{ node.name }}</text>
+              <text v-if="node.state === 'current'" class="tag">进行中</text>
             </view>
             <text class="node-desc">
-              {{ sceneState(scene) === 'done' ? '全部掌握' : sceneState(scene) === 'current' ? `已学 ${sceneLearned(scene)} / ${sceneTotal(scene)}` : `共 ${sceneTotal(scene)} 个单词` }}
+              {{ node.state === 'done' ? '全部掌握' : node.state === 'current' ? `已学 ${node.learned} / ${node.total}` : `共 ${node.total} 个单词` }}
             </text>
-            <view v-if="scene.progress > 0" class="node-progress">
+            <view v-if="node.percent > 0" class="node-progress">
               <view class="progress-bar">
-                <view class="progress-fill" :style="{ width: progressPercent(scene) + '%' }"></view>
+                <view class="progress-fill" :style="{ width: node.percent + '%' }"></view>
               </view>
-              <text class="p-text">{{ progressPercent(scene) }}%</text>
+              <text class="p-text">{{ node.percent }}%</text>
             </view>
           </view>
         </view>
@@ -66,7 +66,7 @@
 
     <!-- Overall Progress -->
     <view class="progress-section">
-      <text class="section-title">学习进度</text>
+      <text class="section-title">学习记录</text>
       <view class="progress-bar big">
         <view class="progress-fill" :style="{ width: totals.percent + '%' }"></view>
       </view>
@@ -84,6 +84,18 @@ import { onShow } from '@dcloudio/uni-app'
 import { getScenes } from '@/api/scene'
 import { useUserStore } from '@/stores/user'
 import type { Scene } from '@/types'
+
+type SceneState = 'done' | 'current' | 'fresh'
+
+interface SceneNodeVM {
+  id: number
+  name: string
+  iconPaths: string[]
+  state: SceneState
+  learned: number
+  total: number
+  percent: number
+}
 
 const userStore = useUserStore()
 const scenes = ref<Scene[]>([])
@@ -106,49 +118,48 @@ onShow(() => {
   loadScenes()
 })
 
+// 视图模型：一次算好每个场景节点的状态，模板不再反复求值
+const sceneNodes = computed<SceneNodeVM[]>(() =>
+  scenes.value.map((scene) => {
+    const total = scene.sub_scenes.reduce((sum, sub) => sum + sub.word_count, 0)
+    const learned = scene.sub_scenes.reduce((sum, sub) => sum + sub.learned_count, 0)
+    const ratio = total > 0 ? learned / total : 0
+    const state: SceneState = ratio >= 1 ? 'done' : ratio > 0 ? 'current' : 'fresh'
+    return {
+      id: scene.id,
+      name: scene.name,
+      iconPaths: SCENE_ICONS[scene.id] || FALLBACK_ICON,
+      state,
+      learned,
+      total,
+      percent: Math.round(ratio * 100),
+    }
+  })
+)
+
 const totals = computed(() => {
   let learned = 0
   let total = 0
-  for (const scene of scenes.value) {
-    learned += sceneLearned(scene)
-    total += sceneTotal(scene)
+  for (const node of sceneNodes.value) {
+    learned += node.learned
+    total += node.total
   }
   return { learned, total, percent: total > 0 ? Math.round((learned / total) * 100) : 0 }
 })
 
-function sceneLearned(scene: Scene): number {
-  return scene.sub_scenes.reduce((sum, sub) => sum + sub.learned_count, 0)
+function openScene(sceneId: number) {
+  uni.navigateTo({ url: `/pages/scene/index?id=${sceneId}` })
 }
 
-function sceneTotal(scene: Scene): number {
-  return scene.sub_scenes.reduce((sum, sub) => sum + sub.word_count, 0)
-}
-
-type SceneState = 'done' | 'current' | 'fresh'
-
-function sceneState(scene: Scene): SceneState {
-  if (scene.progress >= 1) return 'done'
-  if (scene.progress > 0) return 'current'
-  return 'fresh'
-}
-
-function progressPercent(scene: Scene): number {
-  return Math.round((scene.progress || 0) * 100)
-}
-
-function openScene(scene: Scene) {
-  uni.navigateTo({ url: `/pages/scene/index?id=${scene.id}` })
-}
-
-// 线性 SVG 图标（Lucide 风格路径，按场景名映射；MASTER v2 禁止 emoji 当图标）
-const SCENE_ICONS: Record<string, string[]> = {
-  我的家: ['M3 10l9-7 9 7v10a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z'],
-  我的学校: [
+// 线性 SVG 图标（Lucide 风格路径，按种子场景 id 映射；MASTER v2 禁止 emoji 当图标）
+const SCENE_ICONS: Record<number, string[]> = {
+  1: ['M3 10l9-7 9 7v10a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z'],
+  2: [
     'M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z',
     'M22 10v6',
     'M6 12.5V16a6 3 0 0 0 12 0v-3.5',
   ],
-  超市购物: [
+  3: [
     'M7.4 21a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0 -3.2 0',
     'M17.4 21a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0 -3.2 0',
     'M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 7H6',
@@ -159,10 +170,6 @@ const FALLBACK_ICON = [
   'M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z',
   'M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z',
 ]
-
-function iconPaths(scene: Scene): string[] {
-  return SCENE_ICONS[scene.name] || FALLBACK_ICON
-}
 </script>
 
 <style lang="scss" scoped>
@@ -222,7 +229,7 @@ function iconPaths(scene: Scene): string[] {
 .map-sub {
   font-size: 24rpx;
   font-weight: 600;
-  color: $fg-tertiary;
+  color: $fg-secondary;
 }
 
 .map-status {
@@ -250,16 +257,7 @@ function iconPaths(scene: Scene): string[] {
   min-height: 88rpx;
   min-width: 240rpx;
   line-height: 88rpx;
-  box-shadow: $edge-primary-sm;
-
-  &::after {
-    border: none;
-  }
-
-  &:active {
-    transform: translateY(4rpx);
-    box-shadow: none;
-  }
+  @include press-feedback($edge-primary-sm, none);
 }
 
 .map-path {
@@ -346,7 +344,7 @@ function iconPaths(scene: Scene): string[] {
 
   &.star {
     color: $accent-dark;
-    border-color: #ffdfc2;
+    border-color: $accent-badge-border;
   }
 }
 
@@ -471,5 +469,18 @@ function iconPaths(scene: Scene): string[] {
 @keyframes bounce {
   0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
   40% { transform: scale(1); opacity: 1; }
+}
+
+// 尊重系统减弱动态偏好
+@media (prefers-reduced-motion: reduce) {
+  .dot {
+    animation: none;
+    opacity: 0.8;
+  }
+
+  .scene-node:active .node-icon,
+  .progress-fill {
+    transition: none;
+  }
 }
 </style>
