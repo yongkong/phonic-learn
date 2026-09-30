@@ -37,14 +37,12 @@ const ICONS = {
   // 我的：单人
   profile: [
     'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2',
-    'circle cx="12" cy="7" r="4"',
+    'M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
   ],
 }
 
 function svgFor(paths, color) {
-  const body = paths
-    .map((p) => (p.startsWith('circle') ? `<${p} fill="none"/>` : `<path d="${p}"/>`))
-    .join('')
+  const body = paths.map((p) => `<path d="${p}"/>`).join('')
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}" viewBox="0 0 24 24"
      fill="none" stroke="${color}" stroke-width="${STROKE}" stroke-linecap="round" stroke-linejoin="round">

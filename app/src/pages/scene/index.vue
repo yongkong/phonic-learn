@@ -3,8 +3,8 @@
     <!-- Header -->
     <view class="scene-header">
       <text class="scene-title">{{ scene?.name || '场景单词' }}</text>
-      <text class="scene-count">
-        {{ loading ? '加载中…' : `${totals.total} 个单词 · 已学 ${totals.learned}` }}
+      <text v-if="!loading && !loadError" class="scene-count">
+        {{ totals.total }} 个单词 · 已学 {{ totals.learned }}
       </text>
     </view>
 
@@ -19,8 +19,8 @@
 
     <!-- Error -->
     <view v-else-if="loadError" class="scene-status">
-      <text class="status-text">加载失败了，请检查网络</text>
-      <button class="btn-retry" @click="loadAll">重试</button>
+      <text class="status-text">{{ sceneId ? '加载失败了，请检查网络' : '缺少场景参数，请从学习地图进入' }}</text>
+      <button class="btn-retry" @click="loadAll">{{ sceneId ? '重试' : '返回地图' }}</button>
     </view>
 
     <!-- Sub-scene groups -->
@@ -47,8 +47,8 @@
             </view>
             <text class="word-meaning">{{ primaryMeaning(word) }}</text>
           </view>
-          <!-- 状态徽章：形状 + 文字（非仅颜色） -->
-          <view class="status-chip" :class="statusClass(word)">
+          <!-- 状态徽章：形状（○/◐/☆/★）+ 文字（新学/学习中/熟悉/掌握），颜色仅辅助 -->
+          <view class="status-chip" :class="`is-${word.learning_status}`">
             <svg
               class="chip-icon"
               viewBox="0 0 24 24"
@@ -58,9 +58,14 @@
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <path v-for="(d, i) in statusIconPaths(word)" :key="i" :d="d" />
+              <path
+                v-for="(seg, i) in metaOf(word).icon"
+                :key="i"
+                :d="seg.d"
+                :fill="seg.filled ? 'currentColor' : 'none'"
+              />
             </svg>
-            <text class="chip-label">{{ statusMeta(word).label }}</text>
+            <text class="chip-label">{{ metaOf(word).label }}</text>
           </view>
         </view>
       </view>
@@ -72,8 +77,8 @@
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { getScene, getSubSceneWords } from '@/api/scene'
-import { getLearningStatusMeta } from '@/utils/learning-status'
-import type { Scene, SubScene, WordListItem } from '@/types'
+import { getLearningStatusMeta, type LearningStatusMeta } from '@/utils/learning-status'
+import type { Scene, WordListItem } from '@/types'
 
 interface SubGroup {
   id: number
@@ -86,16 +91,15 @@ const scene = ref<Scene | null>(null)
 const groups = ref<SubGroup[]>([])
 const loading = ref(true)
 const loadError = ref(false)
-
-let sceneId = 0
+const sceneId = ref(0)
 
 onLoad((options) => {
-  sceneId = Number(options?.id || 0)
+  sceneId.value = Number(options?.id || 0)
   loadAll()
 })
 
 async function loadAll() {
-  if (!sceneId) {
+  if (!sceneId.value) {
     loadError.value = true
     loading.value = false
     return
@@ -103,15 +107,19 @@ async function loadAll() {
   loading.value = true
   loadError.value = false
   try {
-    scene.value = await getScene(sceneId)
-    const subs: SubScene[] = scene.value.sub_scenes || []
-    const wordLists = await Promise.all(subs.map((sub) => getSubSceneWords(sub.id)))
-    groups.value = subs.map((sub, i) => ({
-      id: sub.id,
-      name: sub.name,
-      learned: wordLists[i].filter((w) => w.learning_status !== 'new').length,
-      words: wordLists[i],
-    }))
+    scene.value = await getScene(sceneId.value)
+    const subs = scene.value.sub_scenes || []
+    groups.value = await Promise.all(
+      subs.map(async (sub) => {
+        const words = await getSubSceneWords(sub.id)
+        return {
+          id: sub.id,
+          name: sub.name,
+          learned: words.filter((w) => w.learning_status !== 'new').length,
+          words,
+        }
+      })
+    )
   } catch {
     loadError.value = true
   } finally {
@@ -134,33 +142,13 @@ function primaryMeaning(word: WordListItem): string {
   return first ? `${first.pos} ${first.cn}` : ''
 }
 
-function statusMeta(word: WordListItem) {
+function metaOf(word: WordListItem): LearningStatusMeta {
   return getLearningStatusMeta(word.learning_status)
-}
-
-function statusClass(word: WordListItem): string {
-  return `is-${word.learning_status}`
-}
-
-// 形状互不相同的线性小图标：新学○ / 学习中◐(半环) / 熟悉☆ / 掌握★
-function statusIconPaths(word: WordListItem): string[] {
-  switch (statusMeta(word).shape) {
-    case 'circle':
-      return ['M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z']
-    case 'half':
-      return ['M12 22a10 10 0 1 1 0-20', 'M12 12h10', 'M12 2a10 10 0 0 1 10 10']
-    case 'star-outline':
-      return ['M12 3l1.9 5.8L20 10.6l-4.9 3.9 1.6 6-4.7-3.6-4.7 3.6 1.6-6L4 10.6l6.1-1.8z']
-    case 'star':
-      return ['M12 3l1.9 5.8L20 10.6l-4.9 3.9 1.6 6-4.7-3.6-4.7 3.6 1.6-6L4 10.6l6.1-1.8z']
-    default:
-      return []
-  }
 }
 
 function openWord(word: WordListItem, group: SubGroup) {
   uni.navigateTo({
-    url: `/pages/learn/index?sceneId=${sceneId}&subSceneId=${group.id}&wordId=${word.id}`,
+    url: `/pages/learn/index?sceneId=${sceneId.value}&subSceneId=${group.id}&wordId=${word.id}`,
   })
 }
 </script>
@@ -271,8 +259,9 @@ function openWord(word: WordListItem, group: SubGroup) {
     margin-bottom: 0;
   }
 
+  // MASTER v2：按压下沉，不缩放
   &:active {
-    transform: scale(0.98);
+    transform: translateY(4rpx);
   }
 }
 
@@ -342,23 +331,23 @@ function openWord(word: WordListItem, group: SubGroup) {
   background: $surface;
   border: 2rpx solid $border;
   flex-shrink: 0;
-  min-width: 88rpx;
+  min-width: 104rpx;
   box-sizing: border-box;
 
   .chip-icon {
-    width: 30rpx;
-    height: 30rpx;
+    width: 32rpx;
+    height: 32rpx;
   }
 
   .chip-label {
-    font-size: 20rpx;
+    font-size: 24rpx;
     font-weight: 800;
     line-height: 1.1;
   }
 
-  // 颜色只是辅助，形状 + 文字已经区分状态
+  // 颜色只是辅助：形状（○/◐/☆/★）+ 文字已区分状态；均用深色档保证白底对比度 ≥4.5:1
   &.is-new {
-    color: $fg-tertiary;
+    color: $fg-secondary;
   }
 
   &.is-learning {
@@ -370,7 +359,7 @@ function openWord(word: WordListItem, group: SubGroup) {
   }
 
   &.is-mastered {
-    color: $success;
+    color: $success-dark;
   }
 }
 
