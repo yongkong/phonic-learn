@@ -14,12 +14,11 @@ export function request<T = any>(
   options: RequestOptions = {}
 ): Promise<T> {
   return new Promise((resolve, reject) => {
-    // Get token from storage
-    const userStr = uni.getStorageSync('user')
+    // user store 持久化形状为 {"user":{...token},"isOnboarded":...}，兼容平铺 {token} 旧格式
     let token = ''
     try {
-      const user = JSON.parse(userStr)
-      token = user?.token || ''
+      const parsed = JSON.parse(uni.getStorageSync('user'))
+      token = parsed?.user?.token || parsed?.token || ''
     } catch (e) {}
 
     uni.request({
