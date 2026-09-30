@@ -10,3 +10,4 @@ python-multipart==0.0.17
 # 测试依赖（TestClient 依赖 httpx）
 pytest==9.1.1
 httpx==0.28.1
+edge-tts==7.2.8

@@ -459,6 +459,12 @@ def seed_words(db):
 
     words_created = 0
     for word_data in words_data:
+        # 例句音频按约定登记：{spelling}_s{n}.mp3，与 gen_audios.py 的
+        # 生成命名一致；音频文件本身由该脚本幂等补齐
+        for idx, sentence in enumerate(word_data["example_sentences"], start=1):
+            sentence.setdefault(
+                "audio_filename", f"{word_data['spelling']}_s{idx}.mp3"
+            )
         word = Word(**word_data)
         db.add(word)
         db.flush()
