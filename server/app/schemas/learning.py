@@ -47,3 +47,5 @@ class LearningStatsResponse(BaseModel):
     today_learned: int = 0
     today_target: int = 20
     average_score: float | None = None
+    dimensions_completed: int = 0
+    next_review_at: str | None = None

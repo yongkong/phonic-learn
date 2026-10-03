@@ -118,4 +118,8 @@ export interface LearningStats {
   today_learned: number
   today_target: number
   average_score: number | null
+  /** 五维完成总数（各学习记录已完成维度之和） */
+  dimensions_completed: number
+  /** 最早到点的复习安排（简化 SM-2 产物），无则 null */
+  next_review_at: string | null
 }

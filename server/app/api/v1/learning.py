@@ -71,13 +71,16 @@ def complete_dimension(
         )
         db.add(record)
 
-    # 更新维度进度
+    # 更新维度进度：JSON 列必须整体重赋值才会被 SQLAlchemy 变更跟踪
+    # （原地修改不落库，导致第二个维度起进度丢失）
     now = datetime.utcnow().isoformat()
-    record.dimension_progress[request.dimension] = {
+    progress = dict(record.dimension_progress or {})
+    progress[request.dimension] = {
         "completed": True,
         "score": request.score,
         "completed_at": now,
     }
+    record.dimension_progress = progress
 
     # 更新发音分数
     if request.dimension == "sound" and request.score:
@@ -281,6 +284,22 @@ def get_learning_stats(
     scores = [r.pronunciation_score for r in records if r.pronunciation_score]
     avg = sum(scores) / len(scores) if scores else None
 
+    # 五维完成总数（各记录已完成维度之和）
+    dimensions_completed = sum(
+        1
+        for r in records
+        for v in (r.dimension_progress or {}).values()
+        if v.get("completed")
+    )
+
+    # 下次复习时间：最早到点的安排（简化 SM-2 产物）
+    upcoming = [
+        r.next_review_at
+        for r in records
+        if r.next_review_at and r.next_review_at > datetime.utcnow()
+    ]
+    next_review_at = min(upcoming).isoformat() if upcoming else None
+
     return LearningStatsResponse(
         total_words=total,
         learned_words=learned,
@@ -288,4 +307,6 @@ def get_learning_stats(
         pending_review=pending,
         today_learned=today_count,
         average_score=avg,
+        dimensions_completed=dimensions_completed,
+        next_review_at=next_review_at,
     )
