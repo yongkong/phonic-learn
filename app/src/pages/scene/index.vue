@@ -97,7 +97,9 @@ onLoad((options) => {
   sceneId.value = Number(options?.id || 0)
 })
 
-// onShow 刷新：从学习页返回时词表状态可见变化（如 学习中 → 熟悉）
+// onShow 刷新：从学习页返回时词表状态可见变化（如 学习中 → 熟悉）。
+// 已知平台行为：uni H5 对同路由不同参数的 hash 直达会复用 keep-alive 实例，
+// onLoad/onShow 均不触发（见验收记录）；真实路径（首页 navigateTo）不受影响。
 onShow(() => {
   if (sceneId.value) loadAll()
 })
