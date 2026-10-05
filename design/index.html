@@ -322,6 +322,90 @@
     white-space: nowrap;
   }
 
+  /* 桌面版预览 */
+  .desktop-section { max-width: 1120px; margin: 0 auto; padding: 8px 28px 8px; }
+  .desktop-head { text-align: center; margin: 16px 0 26px; }
+  .desktop-head h2 {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 800;
+  }
+  .desktop-head p {
+    margin-top: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--fg-secondary);
+  }
+  .desktop-list { display: flex; flex-direction: column; gap: 44px; align-items: center; }
+  .desktop-item {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .desktop-label { display: flex; align-items: center; gap: 10px; }
+  .desktop-label .no {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    color: var(--accent-dark);
+    background: var(--accent-soft);
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+  }
+  .desktop-label .name {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 800;
+  }
+  .desktop-label .note { font-size: 12px; font-weight: 600; color: var(--fg-tertiary); }
+  .browser-frame {
+    width: 100%;
+    max-width: 1040px;
+    background: #101019;
+    border-radius: 18px;
+    padding-bottom: 14px;
+    box-shadow:
+      inset 0 0 0 2px #3A3A4E,
+      0 24px 48px rgba(30, 27, 75, 0.24);
+    overflow: hidden;
+  }
+  .browser-chrome {
+    height: 42px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    background: #1B1B29;
+  }
+  .browser-chrome .dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+  .dot.red { background: #FF5F57; }
+  .dot.yellow { background: #FEBC2E; }
+  .dot.green { background: #28C840; }
+  .browser-chrome .url {
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.08);
+    color: #9BA0C0;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 48px;
+    border-radius: 8px;
+  }
+  .browser-screen {
+    position: relative;
+    overflow: hidden;
+    margin: 0 14px;
+    border-radius: 10px;
+    background: #fff;
+  }
+  .browser-screen iframe {
+    width: 1280px;
+    height: 800px;
+    border: 0;
+    transform-origin: top left;
+  }
+
   /* Info 区 */
   .info-section {
     max-width: 880px;
@@ -613,6 +697,45 @@
   </div>
 </section>
 
+<!-- 桌面版预览 -->
+<section class="desktop-section" id="desktopSection">
+  <div class="desktop-head">
+    <h2>桌面版预览</h2>
+    <p>同一设计系统在 1280px 宽屏上的布局方向：顶部导航替代底部 tabBar，内容随宽度重排</p>
+  </div>
+  <div class="desktop-list">
+    <div class="desktop-item">
+      <div class="desktop-label">
+        <span class="no">DESKTOP 01</span>
+        <span class="name">场景地图 · 首页</span>
+        <span class="note">进度双卡 + 场景网格</span>
+      </div>
+      <div class="browser-frame">
+        <div class="browser-chrome">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="url">wordworld.app/home</span>
+        </div>
+        <div class="browser-screen"><iframe src="screens/03-home-desktop.html" loading="lazy" title="场景地图桌面版"></iframe></div>
+      </div>
+    </div>
+
+    <div class="desktop-item">
+      <div class="desktop-label">
+        <span class="no">DESKTOP 02</span>
+        <span class="name">五维学习</span>
+        <span class="note">左栏单词卡 + 认形/识义/拼读/巧记/运用 步进器</span>
+      </div>
+      <div class="browser-frame">
+        <div class="browser-chrome">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="url">wordworld.app/learn/orange</span>
+        </div>
+        <div class="browser-screen"><iframe src="screens/04-learning-desktop.html" loading="lazy" title="五维学习桌面版"></iframe></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- Info -->
 <section class="info-section">
   <div class="info-card wide">
@@ -636,6 +759,7 @@
       <li><b>练习游戏</b> — 超市大冒险：看图选词 + 得分 + 生命值</li>
       <li><b>个人中心</b> — 等级 XP / 错词本 / 勋章墙 / 艾宾浩斯复习</li>
       <li><b>看图作文</b> — 图片提示 + 提示词插入 + AI 批改入口</li>
+      <li><b>桌面版 × 2</b> — 场景地图 / 五维学习的 1280px 宽屏布局，验证网页化方向</li>
     </ul>
   </div>
 
@@ -707,6 +831,19 @@
     if (!ticking) { ticking = true; requestAnimationFrame(updateActive); }
   });
   updateActive();
+
+  // 桌面版预览：iframe 1280×800 随容器宽度等比缩放
+  function fitDesktopFrames() {
+    document.querySelectorAll('.browser-frame').forEach(frame => {
+      const screenEl = frame.querySelector('.browser-screen');
+      const scale = screenEl.clientWidth / 1280;
+      const iframe = screenEl.querySelector('iframe');
+      iframe.style.transform = 'scale(' + scale + ')';
+      screenEl.style.height = (800 * scale) + 'px';
+    });
+  }
+  window.addEventListener('resize', fitDesktopFrames);
+  fitDesktopFrames();
 </script>
 </body>
 </html>

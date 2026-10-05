@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>WordWorld - 场景地图（桌面版 1280）</title>
+<link rel="stylesheet" href="../css/tokens.css">
+<style>
+  /* 桌面画布：固定 1280×800，供展示页等比缩放 */
+  body { overflow: hidden; }
+
+  .page {
+    width: 1280px;
+    height: 800px;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ===== 顶部导航（网页版替代 iOS tabBar） ===== */
+  .site-header {
+    height: 64px;
+    background: rgba(255,255,255,0.92);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding: 0 40px;
+    flex-shrink: 0;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-mark {
+    width: 36px; height: 36px;
+    border-radius: 11px;
+    background: linear-gradient(135deg, var(--primary-light), var(--primary-dark));
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 800;
+    box-shadow: 0 4px 10px rgba(79,70,229,0.3);
+  }
+  .brand-name { font-family: var(--font-display); font-size: 18px; font-weight: 800; }
+  .brand-name span { color: var(--accent); }
+
+  .site-nav { display: flex; gap: 6px; margin-left: 16px; }
+  .site-nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border-radius: var(--radius-pill);
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--fg-secondary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition-fast);
+  }
+  .site-nav a:hover { background: var(--primary-soft); color: var(--primary); }
+  .site-nav a.active { background: var(--primary); color: #fff; box-shadow: 0 2px 0 var(--primary-dark); }
+  .site-nav a svg { width: 17px; height: 17px; }
+
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .header-right .meta-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 7px 14px;
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 800;
+  }
+  .meta-pill.streak { color: var(--accent-dark); }
+  .meta-pill.gems { color: #0E7490; }
+  .header-avatar {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    background: #D6DEFF;
+    color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid #fff;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+  }
+
+  /* ===== 主内容 ===== */
+  .main { flex: 1; padding: 28px 40px 32px; overflow: hidden; }
+
+  .hero-row {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 24px;
+  }
+
+  .quest-card {
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 70%);
+    border-radius: var(--radius-xl);
+    padding: 28px 32px;
+    color: #fff;
+    box-shadow: 0 10px 28px rgba(79, 70, 229, 0.35);
+    position: relative;
+    overflow: hidden;
+  }
+  .quest-card::after {
+    content: '';
+    position: absolute;
+    right: -50px; top: -50px;
+    width: 190px; height: 190px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+  }
+  .quest-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .quest-title {
+    font-size: 16px; font-weight: 800;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .quest-count { font-family: var(--font-display); font-size: 15px; font-weight: 800; opacity: 0.92; }
+  .quest-card .progress-bar { background: rgba(255,255,255,0.25); height: 14px; }
+  .quest-card .progress-fill { background: #fff; }
+  .quest-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 16px;
+  }
+  .quest-foot .desc { font-size: 13px; font-weight: 600; opacity: 0.85; }
+  .quest-cta {
+    border: none;
+    background: #fff;
+    color: var(--primary-dark);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 800;
+    padding: 11px 24px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    box-shadow: 0 3px 0 rgba(30,27,75,0.18);
+    transition: var(--transition-normal);
+  }
+  .quest-cta:hover { transform: translateY(-1px); }
+  .quest-cta:active { transform: translateY(2px); box-shadow: none; }
+
+  .daily-card {
+    background: var(--surface);
+    border: 1px solid #FFDFC2;
+    border-radius: var(--radius-xl);
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .daily-head { display: flex; align-items: center; gap: 14px; }
+  .daily-icon {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    background: var(--accent);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    box-shadow: var(--edge-accent);
+  }
+  .daily-title { font-size: 17px; font-weight: 800; color: var(--accent-dark); font-family: var(--font-display); }
+  .daily-desc { font-size: 13px; font-weight: 600; color: #9A5B2D; margin-top: 2px; }
+  .daily-foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+  .daily-timer {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 800;
+    color: var(--fg-secondary);
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    padding: 7px 14px;
+    border-radius: var(--radius-pill);
+  }
+  .daily-go {
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 800;
+    padding: 11px 24px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    box-shadow: var(--edge-accent);
+    transition: var(--transition-normal);
+  }
+  .daily-go:hover { transform: translateY(-1px); }
+  .daily-go:active { transform: translateY(2px); box-shadow: var(--edge-accent-sm); }
+
+  /* ===== 学习地图 ===== */
+  .map-section { margin-top: 32px; }
+  .map-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .map-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .map-sub { font-size: 13px; font-weight: 700; color: var(--fg-tertiary); }
+
+  .scene-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .scene-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 22px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: var(--transition-normal);
+    position: relative;
+  }
+  .scene-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .scene-card:active { transform: translateY(0); }
+  .scene-icon {
+    width: 60px; height: 60px;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .scene-icon.done { background: var(--success); color: #fff; }
+  .scene-icon.current { background: var(--accent); color: #fff; animation: pulse-ring 2s ease infinite; }
+  .scene-icon.locked { background: #E3E5F3; color: var(--fg-tertiary); }
+  .scene-body { flex: 1; min-width: 0; }
+  .scene-name {
+    font-size: 17px; font-weight: 800;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .scene-name .tag {
+    font-size: 11px; font-weight: 800;
+    padding: 2px 10px;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+  .scene-desc { font-size: 13px; font-weight: 600; color: var(--fg-secondary); margin-top: 3px; }
+  .scene-progress { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+  .scene-progress .progress-bar { flex: 1; height: 8px; }
+  .scene-progress .p-text { font-size: 12px; font-weight: 800; color: var(--fg-tertiary); }
+  .scene-stars { display: flex; gap: 2px; margin-top: 10px; }
+  .scene-go { color: var(--fg-tertiary); display: flex; align-items: center; }
+  .scene-card.current .scene-go { color: var(--accent-dark); }
+  .scene-card.locked { opacity: 0.75; }
+  .scene-card.locked .scene-name { color: var(--fg-secondary); }
+
+  /* 学习足迹条 */
+  .footprint-strip {
+    margin-top: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .fp-left { display: flex; flex-direction: column; gap: 3px; }
+  .fp-title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 800;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .fp-desc { font-size: 13px; font-weight: 600; color: var(--fg-secondary); }
+  .fp-days { display: flex; gap: 12px; margin-left: auto; }
+  .fp-day {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    color: var(--fg-tertiary);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800;
+  }
+  .fp-day.hit {
+    background: var(--success-soft);
+    border-color: var(--success);
+    color: var(--success-dark);
+    position: relative;
+  }
+  .fp-day.hit::after {
+    content: '';
+    position: absolute;
+    bottom: -9px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px; height: 4px;
+    border-radius: 2px;
+    background: var(--success);
+  }
+  .fp-xp {
+    text-align: center;
+    background: var(--primary-soft);
+    border-radius: var(--radius-md);
+    padding: 10px 22px;
+  }
+  .fp-xp-val {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--primary);
+  }
+  .fp-xp-label { font-size: 11px; font-weight: 700; color: var(--fg-tertiary); }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="site-header">
+    <div class="brand">
+      <div class="brand-mark">W</div>
+      <div class="brand-name">Word<span>World</span> 单词世界</div>
+    </div>
+    <nav class="site-nav">
+      <a class="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+        首页
+      </a>
+      <a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        练习
+      </a>
+      <a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5A4.5 4.5 0 0 0 2 9c0 6 10 13 10 13s10-7 10-13a4.5 4.5 0 0 0-10-2.5z"/></svg>
+        复习
+      </a>
+      <a>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        我的
+      </a>
+    </nav>
+    <div class="header-right">
+      <span class="meta-pill streak">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><path d="M12 2c1 4-4 6-4 10a4 4 0 0 0 8 0c0-1.5-.5-2.5-1-3.5 2.5 1 4 3.5 4 6a7 7 0 1 1-14 0c0-6 6-8 7-12.5z"/></svg>
+        连续 7 天
+      </span>
+      <span class="meta-pill gems">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20"/><path d="M12 21L8 9l4-6 4 6z"/></svg>
+        120
+      </span>
+      <div class="header-avatar" role="button" aria-label="个人中心">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="hero-row">
+      <div class="quest-card">
+        <div class="quest-top">
+          <span class="quest-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            今日目标
+          </span>
+          <span class="quest-count">12 / 20 单词</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width: 60%"></div></div>
+        <div class="quest-foot">
+          <span class="desc">还差 8 个单词，继续加油 —— 完成后可领取 20 金币奖励</span>
+          <button class="quest-cta">继续学习</button>
+        </div>
+      </div>
+
+      <div class="daily-card">
+        <div class="daily-head">
+          <div class="daily-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          </div>
+          <div>
+            <div class="daily-title">每日挑战 · 超市大冒险</div>
+            <div class="daily-desc">水果区限时挑战，答对越多金币越多</div>
+          </div>
+        </div>
+        <div class="daily-foot">
+          <span class="daily-timer">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            限时 5 分钟
+          </span>
+          <button class="daily-go">去挑战</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="map-section">
+      <div class="map-header">
+        <div class="map-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20l-5.5-2.5V4L9 6.5 15 4l5.5 2.5V20L15 17.5 9 20z"/><path d="M9 6.5V20"/><path d="M15 4v13.5"/></svg>
+          学习地图
+        </div>
+        <span class="map-sub">已完成 1 / 6 个场景 · 掌握单词 27 / 96</span>
+      </div>
+
+      <div class="scene-grid">
+        <div class="scene-card">
+          <div class="scene-icon done">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-7 9 7v10a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>
+          </div>
+          <div class="scene-body">
+            <div class="scene-name">我的家</div>
+            <div class="scene-desc">15 个单词 · 全部掌握</div>
+            <div class="scene-stars">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><path d="M12 3l1.9 5.8L20 10.6l-4.9 3.9 1.6 6-4.7-3.6-4.7 3.6 1.6-6L4 10.6l6.1-1.8z"/></svg>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><path d="M12 3l1.9 5.8L20 10.6l-4.9 3.9 1.6 6-4.7-3.6-4.7 3.6 1.6-6L4 10.6l6.1-1.8z"/></svg>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><path d="M12 3l1.9 5.8L20 10.6l-4.9 3.9 1.6 6-4.7-3.6-4.7 3.6 1.6-6L4 10.6l6.1-1.8z"/></svg>
+            </div>
+          </div>
+          <span class="scene-go">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </span>
+        </div>
+
+        <div class="scene-card current">
+          <div class="scene-icon current">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1.6"/><circle cx="19" cy="21" r="1.6"/><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 7H6"/></svg>
+          </div>
+          <div class="scene-body">
+            <div class="scene-name">超市购物 <span class="tag">进行中</span></div>
+            <div class="scene-desc">水果区学到一半，回来继续</div>
+            <div class="scene-progress">
+              <div class="progress-bar"><div class="progress-fill accent" style="width: 80%"></div></div>
+              <span class="p-text">12/15</span>
+            </div>
+          </div>
+          <span class="scene-go">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </span>
+        </div>
+
+        <div class="scene-card locked">
+          <div class="scene-icon locked">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div class="scene-body">
+            <div class="scene-name">城市公园</div>
+            <div class="scene-desc">完成「超市购物」后解锁 · 16 词</div>
+          </div>
+        </div>
+
+        <div class="scene-card locked">
+          <div class="scene-icon locked">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div class="scene-body">
+            <div class="scene-name">动物园</div>
+            <div class="scene-desc">完成「城市公园」后解锁 · 18 词</div>
+          </div>
+        </div>
+
+        <div class="scene-card locked">
+          <div class="scene-icon locked">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div class="scene-body">
+            <div class="scene-name">交通出行</div>
+            <div class="scene-desc">完成「动物园」后解锁 · 15 词</div>
+          </div>
+        </div>
+
+        <div class="scene-card locked">
+          <div class="scene-icon locked">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div class="scene-body">
+            <div class="scene-name">快餐厅</div>
+            <div class="scene-desc">完成「交通出行」后解锁 · 17 词</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 学习足迹 -->
+      <div class="footprint-strip">
+        <div class="fp-left">
+          <span class="fp-title">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            本周足迹
+          </span>
+          <span class="fp-desc">已连续 5 天达标，周末再学 2 天拿「全勤勋章」</span>
+        </div>
+        <div class="fp-days">
+          <span class="fp-day hit">一</span>
+          <span class="fp-day hit">二</span>
+          <span class="fp-day hit">三</span>
+          <span class="fp-day hit">四</span>
+          <span class="fp-day hit">五</span>
+          <span class="fp-day">六</span>
+          <span class="fp-day">日</span>
+        </div>
+        <div class="fp-xp">
+          <span class="fp-xp-val">+240 XP</span>
+          <span class="fp-xp-label">本周获得</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>WordWorld - 五维学习（桌面版 1280）</title>
+<link rel="stylesheet" href="../css/tokens.css">
+<style>
+  body { overflow: hidden; }
+
+  .page {
+    width: 1280px;
+    height: 800px;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ===== 顶部：退出 + 场景面包屑 + 进度 + 生命 ===== */
+  .learn-header {
+    height: 64px;
+    background: rgba(255,255,255,0.92);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 0 32px;
+    flex-shrink: 0;
+  }
+  .exit-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: none; background: none;
+    font-family: var(--font-body);
+    font-size: 14px; font-weight: 800;
+    color: var(--fg-secondary);
+    cursor: pointer;
+    padding: 9px 14px;
+    border-radius: var(--radius-pill);
+    transition: var(--transition-fast);
+  }
+  .exit-btn:hover { background: var(--error-soft); color: var(--error); }
+  .crumb { font-size: 15px; font-weight: 800; color: var(--fg-secondary); }
+  .crumb b { color: var(--fg); }
+  .seg-track { flex: 1; display: flex; gap: 6px; max-width: 420px; margin: 0 auto; }
+  .seg { flex: 1; height: 10px; border-radius: var(--radius-pill); background: rgba(79,70,229,0.15); }
+  .seg.done { background: var(--primary); }
+  .seg.now { background: var(--primary-light); animation: pulse-ring 1.6s ease infinite; }
+  .word-counter { font-size: 13px; font-weight: 800; color: var(--fg-tertiary); font-family: var(--font-display); }
+  .hearts { display: flex; gap: 4px; color: var(--error); }
+
+  /* ===== 主体两栏 ===== */
+  .learn-body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 28px;
+    padding: 28px 32px 32px;
+    overflow: hidden;
+  }
+
+  /* 左栏：单词卡 + 维度步进器 */
+  .word-card {
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 28px 24px;
+    text-align: center;
+  }
+  .word-big {
+    font-family: var(--font-display);
+    font-size: 46px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    line-height: 1.15;
+  }
+  .word-big span { display: inline-block; }
+  .word-big span:hover { transform: translateY(-3px); }
+  .phonetic-row {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-top: 10px;
+  }
+  .phonetic-row .ipa { font-size: 18px; font-weight: 700; color: var(--fg-secondary); }
+  .speak-btn {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary-soft);
+    color: var(--primary);
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-fast);
+  }
+  .speak-btn:hover { background: var(--primary); color: #fff; }
+  .speak-btn:active { transform: scale(0.88); }
+  .word-cn {
+    display: inline-block;
+    margin-top: 14px;
+    font-size: 15px; font-weight: 800;
+    background: var(--warning-soft);
+    color: #92400E;
+    padding: 5px 16px;
+    border-radius: var(--radius-pill);
+  }
+
+  .dim-stepper { margin-top: 24px; position: relative; }
+  .dim-stepper::before {
+    content: '';
+    position: absolute;
+    left: 23px; top: 24px; bottom: 24px;
+    border-left: 3px dashed var(--border-strong);
+  }
+  .dim-step {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    border: none;
+    background: none;
+    padding: 11px 12px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-family: var(--font-body);
+    text-align: left;
+    transition: var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .dim-step:hover { background: rgba(79, 70, 229, 0.07); }
+  .dim-step .n {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--border-strong);
+    color: var(--fg-tertiary);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display);
+    font-size: 15px; font-weight: 800;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    transition: var(--transition-fast);
+  }
+  .dim-step .labels { display: flex; flex-direction: column; }
+  .dim-step .l1 { font-size: 15px; font-weight: 800; color: var(--fg-secondary); }
+  .dim-step .l2 { font-size: 12px; font-weight: 600; color: var(--fg-tertiary); }
+  .dim-step.active .n {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+    box-shadow: 0 2px 0 var(--primary-dark);
+  }
+  .dim-step.active .l1 { color: var(--primary); }
+  .dim-step.done .n {
+    background: var(--success);
+    border-color: var(--success);
+    color: #fff;
+  }
+
+  /* 右栏：维度面板 */
+  .panel-card {
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 32px 36px 24px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .dim-panel { display: none; flex-direction: column; gap: 20px; flex: 1; }
+  .dim-panel.active { display: flex; animation: fadeInUp 0.3s ease both; }
+
+  .panel-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 800;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .panel-title .n {
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    background: var(--primary-soft);
+    color: var(--primary);
+    font-size: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .panel-sub { font-size: 14px; font-weight: 600; color: var(--fg-secondary); margin-top: -12px; }
+
+  /* 形 */
+  .shape-row { display: flex; gap: 14px; justify-content: center; margin: 8px 0; }
+  .letter-tile {
+    width: 64px; height: 76px;
+    font-size: 38px;
+    border-bottom-width: 5px;
+    cursor: default;
+  }
+  .shape-legend {
+    display: flex; justify-content: center; gap: 28px;
+    font-size: 13px; font-weight: 700; color: var(--fg-secondary);
+  }
+  .shape-legend i {
+    display: inline-block; width: 11px; height: 11px;
+    border-radius: 3px; margin-right: 6px;
+  }
+  .shape-tip {
+    font-size: 14px; font-weight: 600; color: var(--fg-secondary);
+    background: var(--surface-alt);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    line-height: 1.7;
+    text-align: center;
+  }
+  .shape-tip b.v { color: var(--vowel); }
+  .shape-tip b.c { color: var(--consonant); }
+
+  /* 义 */
+  .meaning-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 24px;
+    align-items: stretch;
+    flex: 1;
+  }
+  .scene-pic {
+    border-radius: var(--radius-md);
+    background: linear-gradient(180deg, #E7EBFF 0%, #FFF6E8 100%);
+    display: flex; align-items: center; justify-content: center;
+    min-height: 240px;
+  }
+  .meaning-side { display: flex; flex-direction: column; gap: 16px; justify-content: center; }
+  .meaning-main .zh { font-size: 40px; font-weight: 800; font-family: var(--font-display); }
+  .meaning-main .pos { font-size: 14px; font-weight: 700; color: var(--fg-tertiary); margin-left: 8px; }
+  .example-line {
+    background: var(--primary-soft);
+    border-radius: var(--radius-md);
+    padding: 18px 22px;
+    font-size: 17px; font-weight: 700;
+    color: var(--primary-dark);
+    line-height: 1.6;
+  }
+  .example-line .zh { display: block; font-size: 13px; font-weight: 600; color: var(--fg-secondary); margin-top: 4px; }
+
+  /* 音 */
+  .sound-wrap { display: flex; flex-direction: column; align-items: center; gap: 22px; flex: 1; justify-content: center; }
+  .syllable-row { display: flex; align-items: center; gap: 16px; }
+  .syl {
+    font-family: var(--font-display);
+    font-size: 44px;
+    font-weight: 800;
+    background: var(--surface-alt);
+    border: 2px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: 14px 30px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+  }
+  .syl:hover { border-color: var(--primary); color: var(--primary); }
+  .syl:active { transform: scale(0.95); }
+  .syl-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--syllable-sep); }
+  .wave { display: flex; justify-content: center; align-items: flex-end; gap: 6px; height: 44px; }
+  .wave i {
+    width: 7px; border-radius: 4px;
+    background: var(--primary-light);
+    animation: wave 1s ease-in-out infinite;
+  }
+  .wave i:nth-child(1) { height: 30%; animation-delay: 0s; }
+  .wave i:nth-child(2) { height: 70%; animation-delay: 0.15s; }
+  .wave i:nth-child(3) { height: 100%; animation-delay: 0.3s; }
+  .wave i:nth-child(4) { height: 55%; animation-delay: 0.45s; }
+  .wave i:nth-child(5) { height: 85%; animation-delay: 0.6s; }
+  .wave i:nth-child(6) { height: 65%; animation-delay: 0.2s; }
+  .wave i:nth-child(7) { height: 40%; animation-delay: 0.5s; }
+  @keyframes wave { 0%,100% { transform: scaleY(0.5); } 50% { transform: scaleY(1); } }
+  .audio-row { display: flex; gap: 16px; }
+  .mic-hint { text-align: center; font-size: 14px; font-weight: 600; color: var(--fg-tertiary); }
+
+  /* 记 */
+  .story-card {
+    background: linear-gradient(135deg, #FFF6E8 0%, #FFEFD9 100%);
+    border: 1px solid #FFDFC2;
+    border-radius: var(--radius-lg);
+    padding: 26px 30px;
+    font-size: 17px;
+    line-height: 2;
+    font-weight: 600;
+    color: #7C4A1D;
+  }
+  .story-card b { color: var(--accent-dark); }
+  .story-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 800;
+    color: var(--accent-dark);
+    background: #fff;
+    border-radius: var(--radius-pill);
+    padding: 5px 14px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* 用 */
+  .use-wrap { display: flex; flex-direction: column; gap: 24px; flex: 1; justify-content: center; }
+  .use-sentence { font-size: 26px; font-weight: 700; line-height: 2; text-align: center; }
+  .blank {
+    display: inline-block;
+    min-width: 150px;
+    border-bottom: 3px dashed var(--primary-light);
+    color: var(--primary);
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-align: center;
+  }
+  .word-chips { display: flex; justify-content: center; gap: 16px; }
+  .feedback-toast {
+    display: none;
+    padding: 14px;
+    border-radius: var(--radius-md);
+    font-size: 15px; font-weight: 800;
+    align-items: center; justify-content: center; gap: 8px;
+  }
+  .feedback-toast.show { display: flex; animation: pop 0.3s ease both; }
+  .feedback-toast.ok { background: var(--success-soft); color: var(--success-dark); }
+  .feedback-toast.bad { background: var(--error-soft); color: var(--error); }
+
+  /* 右栏底部操作 */
+  .panel-foot {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .panel-foot .tip { margin-right: auto; font-size: 13px; font-weight: 600; color: var(--fg-tertiary); }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="learn-header">
+    <button class="exit-btn">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+      退出
+    </button>
+    <span class="crumb"><b>超市购物</b> · 水果区</span>
+    <div class="seg-track">
+      <div class="seg done"></div>
+      <div class="seg done"></div>
+      <div class="seg now"></div>
+      <div class="seg"></div>
+      <div class="seg"></div>
+      <div class="seg"></div>
+    </div>
+    <span class="word-counter">3 / 10</span>
+    <div class="hearts" aria-label="生命值 3">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6.5A4.5 4.5 0 0 0 2 9c0 6 10 13 10 13s10-7 10-13a4.5 4.5 0 0 0-10-2.5z"/></svg>
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6.5A4.5 4.5 0 0 0 2 9c0 6 10 13 10 13s10-7 10-13a4.5 4.5 0 0 0-10-2.5z"/></svg>
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M12 6.5A4.5 4.5 0 0 0 2 9c0 6 10 13 10 13s10-7 10-13a4.5 4.5 0 0 0-10-2.5z"/></svg>
+    </div>
+  </header>
+
+  <div class="learn-body">
+    <!-- 左栏 -->
+    <aside>
+      <div class="word-card">
+        <div class="word-big">
+          <span style="color: var(--vowel)">o</span><span style="color: var(--consonant)">r</span><span style="color: var(--vowel)">a</span><span style="color: var(--consonant)">n</span><span style="color: var(--consonant)">g</span><span style="color: var(--silent)">e</span>
+        </div>
+        <div class="phonetic-row">
+          <span class="ipa">/ˈɒr.ɪndʒ/</span>
+          <button class="speak-btn" aria-label="播放发音">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9.5 9.5 0 0 1 0 13"/></svg>
+          </button>
+        </div>
+        <div class="word-cn">n. 橘子；橙子</div>
+      </div>
+
+      <nav class="dim-stepper">
+        <button class="dim-step done" data-dim="shape">
+          <span class="n">✓</span>
+          <span class="labels"><span class="l1">认形</span><span class="l2">字母与拼读着色</span></span>
+        </button>
+        <button class="dim-step done" data-dim="meaning">
+          <span class="n">✓</span>
+          <span class="labels"><span class="l1">识义</span><span class="l2">情景释义与图示</span></span>
+        </button>
+        <button class="dim-step active" data-dim="sound">
+          <span class="n">3</span>
+          <span class="labels"><span class="l1">拼读</span><span class="l2">音节拆分与跟读</span></span>
+        </button>
+        <button class="dim-step" data-dim="memory">
+          <span class="n">4</span>
+          <span class="labels"><span class="l1">巧记</span><span class="l2">联想助记故事</span></span>
+        </button>
+        <button class="dim-step" data-dim="use">
+          <span class="n">5</span>
+          <span class="labels"><span class="l1">运用</span><span class="l2">例句选词练习</span></span>
+        </button>
+      </nav>
+    </aside>
+
+    <!-- 右栏 -->
+    <section class="panel-card">
+      <!-- 形 -->
+      <div class="dim-panel" data-panel="shape">
+        <div class="panel-title"><span class="n">1</span>认一认字母</div>
+        <p class="panel-sub">点击单词卡上的字母也可以听发音</p>
+        <div class="shape-row">
+          <div class="letter-tile" style="color: var(--vowel)">o</div>
+          <div class="letter-tile" style="color: var(--consonant)">r</div>
+          <div class="letter-tile" style="color: var(--vowel)">a</div>
+          <div class="letter-tile" style="color: var(--consonant)">n</div>
+          <div class="letter-tile" style="color: var(--consonant)">g</div>
+          <div class="letter-tile" style="color: var(--silent)">e</div>
+        </div>
+        <div class="shape-legend">
+          <span><i style="background: var(--vowel)"></i>元音</span>
+          <span><i style="background: var(--consonant)"></i>辅音</span>
+          <span><i style="background: var(--silent)"></i>不发音</span>
+        </div>
+        <div class="shape-tip">词尾的 <b class="c">e</b> 是小哑巴，<u>不发音</u>；<b class="v">o</b> 和 <b class="v">a</b> 是元音，负责开口出声。</div>
+      </div>
+
+      <!-- 义 -->
+      <div class="dim-panel" data-panel="meaning">
+        <div class="panel-title"><span class="n">2</span>它是什么？</div>
+        <div class="meaning-grid">
+          <div class="scene-pic">
+            <svg width="230" height="180" viewBox="0 0 150 110">
+              <ellipse cx="75" cy="92" rx="58" ry="12" fill="#D6DEFF"/>
+              <circle cx="58" cy="66" r="26" fill="#FF9F43"/>
+              <circle cx="95" cy="70" r="21" fill="#FFB96B"/>
+              <path d="M58 40c2-8 8-12 8-12s4 6-2 12z" fill="#10B981"/>
+              <path d="M95 49c1-6 6-9 6-9s3 5-1 9z" fill="#34D399"/>
+              <text x="58" y="72" text-anchor="middle" font-family="Baloo 2, sans-serif" font-size="14" font-weight="700" fill="#E2761B">orange</text>
+            </svg>
+          </div>
+          <div class="meaning-side">
+            <div class="meaning-main">
+              <span class="zh">橘子</span><span class="pos">n. 名词</span>
+            </div>
+            <div class="example-line">
+              The orange is sweet.<span class="zh">这个橘子是甜的。</span>
+            </div>
+            <div class="example-line" style="background: var(--accent-soft); color: var(--accent-dark);">
+              I peel an orange.<span class="zh">我剥了一个橘子。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 音 -->
+      <div class="dim-panel active" data-panel="sound">
+        <div class="panel-title"><span class="n">3</span>拆一拆音节</div>
+        <div class="sound-wrap">
+          <div class="syllable-row">
+            <div class="syl">or</div>
+            <div class="syl-dot"></div>
+            <div class="syl">ange</div>
+          </div>
+          <div class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="audio-row">
+            <button class="btn btn-primary">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+              朗读
+            </button>
+            <button class="btn btn-outline">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.77.04"/></svg>
+              慢速
+            </button>
+          </div>
+          <div class="mic-hint">
+            <button class="speak-btn" style="width: 56px; height: 56px; margin-bottom: 8px;" aria-label="跟读">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 19v3"/></svg>
+            </button>
+            <div>点麦克风跟读，听听你的发音</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 记 -->
+      <div class="dim-panel" data-panel="memory">
+        <div class="panel-title"><span class="n">4</span>记忆小故事</div>
+        <span class="story-tag">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--accent)" stroke="none"><path d="M12 3l1.9 5.8L20 10.6l-4.9 3.9 1.6 6-4.7-3.6-4.7 3.6 1.6-6L4 10.6l6.1-1.8z"/></svg>
+          联想助记
+        </span>
+        <div class="story-card">
+          <b>or</b> 长得圆圆的，像一个<b>大橘子</b>滚过来；<br>
+          <b>ange</b> 是来参加水果派对的朋友们。<br>
+          想象你掰开橘子，<b>"哦！"(or)</b> 一声，里面挤满了小月亮！
+        </div>
+        <div class="shape-tip">闭上眼睛想 5 秒，画面越夸张，记得越牢。</div>
+      </div>
+
+      <!-- 用 -->
+      <div class="dim-panel" data-panel="use">
+        <div class="panel-title"><span class="n">5</span>用一用它</div>
+        <div class="use-wrap">
+          <div class="use-sentence">
+            I eat an <span class="blank" id="blank">&nbsp;</span> for breakfast.
+          </div>
+          <div class="word-chips">
+            <button class="chip" data-word="apple">apple</button>
+            <button class="chip" data-word="orange">orange</button>
+            <button class="chip" data-word="banana">banana</button>
+          </div>
+          <div class="feedback-toast ok" id="toastOk">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            完全正确！早餐吃橘子很棒
+          </div>
+          <div class="feedback-toast bad" id="toastBad">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+            语法没错，但看看图片里是什么？
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-foot">
+        <span class="tip">完成 5 个维度即可掌握这个单词</span>
+        <button class="btn btn-ghost">跳过</button>
+        <button class="btn btn-primary" id="nextBtn" style="min-width: 160px;">继续</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  // 维度步进器切换
+  document.querySelectorAll('.dim-step').forEach(step => {
+    step.addEventListener('click', () => {
+      document.querySelectorAll('.dim-step').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.dim-panel').forEach(p => p.classList.remove('active'));
+      step.classList.add('active');
+      document.querySelector('[data-panel="' + step.dataset.dim + '"]').classList.add('active');
+    });
+  });
+
+  // 选词填空
+  const blank = document.getElementById('blank');
+  const ok = document.getElementById('toastOk');
+  const bad = document.getElementById('toastBad');
+  document.querySelectorAll('.word-chips .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      blank.textContent = chip.dataset.word;
+      ok.classList.remove('show');
+      bad.classList.remove('show');
+      void bad.offsetWidth;
+      if (chip.dataset.word === 'orange') {
+        ok.classList.add('show');
+      } else {
+        bad.classList.add('show');
+      }
+    });
+  });
+</script>
+</body>
+</html>
