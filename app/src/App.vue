@@ -21,4 +21,13 @@ page {
   color: $fg;
   font-size: 28rpx;
 }
+
+/* 桌面端（≥1024px）：SiteHeader 顶栏替代底部 tabBar 与原生标题栏 */
+@media (min-width: 1024px) {
+  uni-tabbar,
+  .uni-tabbar,
+  uni-page-head {
+    display: none !important;
+  }
+}
 </style>

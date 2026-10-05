@@ -397,4 +397,20 @@ function openWord(word: WordListItem, group: SubGroup) {
     opacity: 0.8;
   }
 }
+
+/* ===== 桌面端（≥1024px）：子场景分组两列 ===== */
+@media (min-width: 1024px) {
+  .scene-page {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding-bottom: 48rpx;
+  }
+
+  .sub-groups {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+}
 </style>

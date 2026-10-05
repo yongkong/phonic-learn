@@ -1,5 +1,7 @@
 <template>
   <view class="home-page">
+    <SiteHeader active="/pages/home/index" />
+
     <!-- User Greeting -->
     <view class="greeting">
       <text class="greeting-text">你好，<text class="nickname">{{ userStore.nickname }}</text></text>
@@ -83,6 +85,7 @@ import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { getScenes } from '@/api/scene'
 import { useUserStore } from '@/stores/user'
+import SiteHeader from '@/components/SiteHeader.vue'
 import type { Scene } from '@/types'
 
 type SceneState = 'done' | 'current' | 'fresh'
@@ -481,6 +484,63 @@ const FALLBACK_ICON = [
   .scene-node:active .node-icon,
   .progress-fill {
     transition: none;
+  }
+}
+
+/* ===== 桌面端（≥1024px）：任务区 + 三列场景网格 ===== */
+@media (min-width: 1024px) {
+  .home-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    grid-template-areas:
+      'header header'
+      'greeting side'
+      'map side';
+    column-gap: 24px;
+    row-gap: 20px;
+    align-items: start;
+    padding-bottom: 48rpx;
+  }
+
+  .site-header {
+    grid-area: header;
+  }
+
+  .greeting {
+    grid-area: greeting;
+    margin-bottom: 0;
+  }
+
+  .scene-map {
+    grid-area: map;
+    margin-bottom: 0;
+  }
+
+  .progress-section {
+    grid-area: side;
+  }
+
+  .map-path {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding-left: 0;
+
+    // 竖向虚线路径在网格布局下隐藏
+    &::before {
+      display: none;
+    }
+  }
+
+  .scene-node {
+    margin-bottom: 0;
+  }
+
+  .node-icon {
+    width: 128rpx;
+    height: 128rpx;
   }
 }
 </style>

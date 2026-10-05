@@ -410,4 +410,13 @@ function goHome() {
     opacity: 0.8;
   }
 }
+
+/* ===== 桌面端（≥1024px）：居中放宽 ===== */
+@media (min-width: 1024px) {
+  .summary-page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding-bottom: 48rpx;
+  }
+}
 </style>

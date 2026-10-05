@@ -795,4 +795,60 @@ function handleBackOrRetry() {
     opacity: 0.8;
   }
 }
+
+/* ===== 桌面端（≥1024px）：左栏词卡 320px + 右栏维度内容 ===== */
+@media (min-width: 1024px) {
+  .learn-page {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    grid-template-areas:
+      'head content'
+      'steps content'
+      'nav nav';
+    column-gap: 24px;
+    row-gap: 20px;
+    align-items: start;
+    padding-bottom: 48rpx;
+  }
+
+  .learn-status {
+    grid-column: 1 / -1;
+  }
+
+  .word-header {
+    grid-area: head;
+    flex-direction: column;
+    text-align: center;
+    gap: $space-md;
+
+    .btn-audio {
+      margin-left: 0;
+    }
+  }
+
+  .dimension-steps {
+    grid-area: steps;
+    flex-direction: column;
+    margin: 0;
+    gap: $space-sm;
+  }
+
+  .step {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: $space-sm;
+  }
+
+  .dimension-content {
+    grid-area: content;
+    min-height: 440px;
+  }
+
+  .dimension-nav {
+    grid-area: nav;
+    margin-top: 0;
+  }
+}
 </style>

@@ -267,4 +267,12 @@ const handleRegister = async () => {
     box-shadow: none;
   }
 }
+
+/* ===== 桌面端（≥1024px）：居中表单 ===== */
+@media (min-width: 1024px) {
+  .register-page {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+}
 </style>

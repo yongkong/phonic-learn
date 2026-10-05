@@ -1,5 +1,7 @@
 <template>
   <view class="essay-page">
+    <SiteHeader active="/pages/essay/index" />
+
     <view class="coming-soon">
       <text class="icon">📝</text>
       <text class="title">作文</text>
@@ -10,6 +12,7 @@
 </template>
 
 <script setup lang="ts">
+import SiteHeader from '@/components/SiteHeader.vue'
 // TabBar 页面 - 作文
 // TODO: 实现作文功能
 </script>
@@ -55,5 +58,15 @@
   color: $fg-secondary;
   margin-top: $space-sm;
   display: block;
+}
+
+/* 桌面端顶栏对齐所需的水平内边距 */
+@media (min-width: 1024px) {
+  .practice-page,
+  .essay-page,
+  .profile-page {
+    padding-left: $space-xl;
+    padding-right: $space-xl;
+  }
 }
 </style>

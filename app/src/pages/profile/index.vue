@@ -1,5 +1,7 @@
 <template>
   <view class="profile-page">
+    <SiteHeader active="/pages/profile/index" />
+
     <!-- User Info Card -->
     <view class="user-card">
       <view class="avatar">
@@ -51,6 +53,7 @@
 </template>
 
 <script setup lang="ts">
+import SiteHeader from '@/components/SiteHeader.vue'
 import { onMounted } from 'vue'
 
 onMounted(() => {
@@ -188,5 +191,15 @@ const handleSetting = (type: string) => {
 .setting-arrow {
   font-size: 28rpx;
   color: $fg-tertiary;
+}
+
+/* 桌面端顶栏对齐所需的水平内边距 */
+@media (min-width: 1024px) {
+  .practice-page,
+  .essay-page,
+  .profile-page {
+    padding-left: $space-xl;
+    padding-right: $space-xl;
+  }
 }
 </style>
